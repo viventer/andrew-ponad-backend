@@ -1,0 +1,9 @@
+1. Na backend mają być wysyłane posty z frontedu wraz z miniaturkami i zdjęciami. 
+2. Backend te posty przesyła do bazy danych. 
+3. Ma umożliwić tworzenie, edycję, odczyt i usuwanie postów (CRUD).
+4. Ma umożliwić logowanie. 
+5. Autoryzacja ma odbywać się przez 3 różne role: admin, edytor, twórca. 
+6. Admin i Edytor mogą wykonywać wszystkie operacje CRUD na postach. 
+7. Admin może też tworzyć nowych użytkowników i zmieniać im role. 
+8. Twórca może tworzyć nowe posty, a edytować i usuwać może tylko swoje. 
+
