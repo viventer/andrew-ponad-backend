@@ -1,7 +1,6 @@
 const Post = require("../model/Post");
 const User = require("../model/User");
 
-// @desc Get all posts
 // @route GET /posts
 const getAllPosts = async (req, res) => {
   const posts = await Post.find().lean();
@@ -20,7 +19,22 @@ const getAllPosts = async (req, res) => {
   res.json(postsWithUser);
 };
 
-// @desc Create new post
+// @route GET /posts/:id
+const getPost = async (req, res) => {
+  if (!req?.params?.id) {
+    return res.status(400).json({ message: "ID posta jest wymagane" });
+  }
+  const id = req.params.id;
+
+  const post = await Post.findOne({ _id: id });
+  if (!post) {
+    return res
+      .status(204)
+      .json({ message: `Nie znaleziono posta o ID: ${req.params.id}` });
+  }
+  res.json(post);
+};
+
 // @route POST /posts
 const createNewPost = async (req, res) => {
   const { author, title, thumbnail, visibility, content, category } = req.body;
@@ -56,11 +70,14 @@ const createNewPost = async (req, res) => {
   }
 };
 
-// @desc Update a post
-// @route PATCH /posts
+// @route PATCH /posts/:id
 const updatePost = async (req, res) => {
-  const { id, author, title, thumbnail, visibility, content, category } =
-    req.body;
+  if (!req?.params?.id) {
+    return res.status(400).json({ message: "ID posta jest wymagane" });
+  }
+  const id = req.params.id;
+
+  const { author, title, thumbnail, visibility, content, category } = req.body;
 
   if (
     !id ||
@@ -80,13 +97,11 @@ const updatePost = async (req, res) => {
     return res.status(400).json({ message: "Nie odnaleziono posta" });
   }
 
-  // Check for duplicate title
   const duplicate = await Post.findOne({ title })
     .collation({ locale: "pl", strength: 2 })
     .lean()
     .exec();
 
-  // Allow renaming of the original post
   if (duplicate && duplicate?._id.toString() !== id) {
     return res
       .status(409)
@@ -105,14 +120,12 @@ const updatePost = async (req, res) => {
   res.json(`Post: "${updatedPost.title}" został zaaktualizowany`);
 };
 
-// @desc Delete a post
-// @route DELETE /posts
+// @route DELETE /posts/:id
 const deletePost = async (req, res) => {
-  const { id } = req.body;
-
-  if (!id) {
-    return res.status(400).json({ message: "Wymagane ID posta" });
+  if (!req?.params?.id) {
+    return res.status(400).json({ message: "ID posta jest wymagane" });
   }
+  const id = req.params.id;
 
   const post = await Post.findById(id).exec();
 
@@ -122,13 +135,14 @@ const deletePost = async (req, res) => {
 
   const result = await post.deleteOne();
 
-  const reply = `Post "${result.title}" o ID: ${result._id} został usunięty`;
+  const reply = `Post '${post.title}' o ID: ${post._id} został usunięty`;
 
   res.json(reply);
 };
 
 module.exports = {
   getAllPosts,
+  getPost,
   createNewPost,
   updatePost,
   deletePost,
