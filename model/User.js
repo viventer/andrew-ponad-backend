@@ -19,14 +19,8 @@ const userSchema = new Schema({
     required: true,
   },
   roles: {
-    User: {
-      type: Boolean,
-      default: true,
-    },
-    Admin: Boolean,
-    Editor: Boolean,
-    Creator: Boolean,
-    VerifiedUser: Boolean,
+    type: Array,
+    default: ["User"],
   },
   password: {
     type: String,

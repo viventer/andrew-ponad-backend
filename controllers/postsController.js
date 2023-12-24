@@ -97,6 +97,16 @@ const updatePost = async (req, res) => {
     return res.status(400).json({ message: "Nie odnaleziono posta" });
   }
 
+  if (
+    post.author != req.username &&
+    !req.roles.includes("Admin") &&
+    !req.roles.includes("Editor")
+  ) {
+    return res
+      .status(403)
+      .json({ message: "Możesz edytować tylko swoje posty!" });
+  }
+
   const duplicate = await Post.findOne({ title })
     .collation({ locale: "pl", strength: 2 })
     .lean()
@@ -131,6 +141,16 @@ const deletePost = async (req, res) => {
 
   if (!post) {
     return res.status(400).json({ message: "Nie odnaleziono posta" });
+  }
+
+  if (
+    post.author != req.username &&
+    !req.roles.includes("Admin") &&
+    !req.roles.includes("Editor")
+  ) {
+    return res
+      .status(403)
+      .json({ message: "Możesz usuwać tylko swoje posty!" });
   }
 
   const result = await post.deleteOne();

@@ -32,10 +32,10 @@ app.use("/register", require("./routes/register"));
 app.use("/login", require("./routes/login"));
 app.use("/refresh", require("./routes/refresh"));
 app.use("/logout", require("./routes/logout"));
-app.use("/posts", require("./routes/postRoutes"));
+app.use("/posts", require("./routes/api/postRoutes"));
 
 app.use(verifyJWT);
-app.use("/users", require("./routes/api/users"));
+app.use("/users", require("./routes/api/userRoutes"));
 
 app.all("*", (req, res) => {
   res.status(404);
