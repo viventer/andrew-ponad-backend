@@ -5,8 +5,8 @@ const jwt = require("jsonwebtoken");
 const handleLogin = async (req, res) => {
   const cookies = req.cookies;
   console.log(`cookie available at login: ${JSON.stringify(cookies)}`);
-  const { username, password, firstName, lastName, email } = req.body;
-  if (!username || !password || !firstName || !lastName || !email)
+  const { username, password } = req.body;
+  if (!username || !password)
     return res.status(400).json({ message: "Uzupełnij wymagane pola!" });
 
   const foundUser = await User.findOne({ username }).exec();

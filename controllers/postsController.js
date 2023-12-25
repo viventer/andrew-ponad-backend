@@ -92,13 +92,19 @@ const updatePost = async (req, res) => {
   }
 
   const post = await Post.findById(id).exec();
-
   if (!post) {
     return res.status(400).json({ message: "Nie odnaleziono posta" });
   }
 
+  const creator = await User.findById(author).exec();
+  if (!creator) {
+    return res
+      .status(400)
+      .json({ message: "Użytkownik o podanym ID autora nie istnieje" });
+  }
+
   if (
-    post.author != req.username &&
+    creator.username != req.username &&
     !req.roles.includes("Admin") &&
     !req.roles.includes("Editor")
   ) {
@@ -127,7 +133,7 @@ const updatePost = async (req, res) => {
 
   const updatedPost = await post.save();
 
-  res.json(`Post: "${updatedPost.title}" został zaaktualizowany`);
+  res.json(`Post: '${updatedPost.title}' został zaaktualizowany`);
 };
 
 // @route DELETE /posts/:id
@@ -143,8 +149,15 @@ const deletePost = async (req, res) => {
     return res.status(400).json({ message: "Nie odnaleziono posta" });
   }
 
+  const creator = await User.findById(post.author).exec();
+  if (!creator) {
+    return res
+      .status(400)
+      .json({ message: "Użytkownik o podanym ID autora nie istnieje" });
+  }
+
   if (
-    post.author != req.username &&
+    creator.username != req.username &&
     !req.roles.includes("Admin") &&
     !req.roles.includes("Editor")
   ) {
