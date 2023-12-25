@@ -34,7 +34,7 @@ app.use("/refresh", require("./routes/refresh"));
 app.use("/logout", require("./routes/logout"));
 app.use("/posts", require("./routes/api/postRoutes"));
 
-app.use(verifyJWT);
+app.use(verifyJWT(true));
 app.use("/users", require("./routes/api/userRoutes"));
 
 app.all("*", (req, res) => {

@@ -9,8 +9,29 @@ const getAllPosts = async (req, res) => {
     return res.status(400).json({ message: "Nie znaleziono postów" });
   }
 
-  const postsWithUser = await Promise.all(
+  const filteredPosts = await Promise.all(
     posts.map(async (post) => {
+      const user = await User.findById(post.author).lean().exec();
+
+      if (user.username === req.username) {
+        return true;
+      } else if (["unlisted", "private", "draft"].includes(post.visibility)) {
+        return false;
+      } else if (
+        post.visibility === "verifiedOnly" &&
+        (req?.roles?.toString() === ["User"].toString() || !req.isLoggedIn)
+      ) {
+        return false;
+      } else {
+        return true;
+      }
+    })
+  );
+
+  const finalPosts = posts.filter((post, index) => filteredPosts[index]);
+
+  const postsWithUser = await Promise.all(
+    finalPosts.map(async (post) => {
       const user = await User.findById(post.author).lean().exec();
       return { ...post, username: user.username };
     })
