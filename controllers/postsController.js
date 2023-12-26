@@ -292,6 +292,24 @@ const deletePost = async (req, res) => {
   res.json(reply);
 };
 
+const addPostView = async (req, res) => {
+  if (!req?.params?.id) {
+    return res.status(400).json({ message: "ID posta jest wymagane" });
+  }
+  const id = req.params.id;
+
+  const post = await Post.findById(id).exec();
+  if (!post) {
+    return res.status(400).json({ message: "Nie odnaleziono posta" });
+  }
+
+  post.views += 1;
+
+  const updatedPost = await post.save();
+
+  res.json(`Post: '${updatedPost.title}' został zaaktualizowany`);
+};
+
 module.exports = {
   getAllPosts,
   getPost,
@@ -299,4 +317,5 @@ module.exports = {
   updatePost,
   deletePost,
   getPostsByFilter,
+  addPostView,
 };

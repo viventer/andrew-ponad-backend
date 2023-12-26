@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const verifyJWT = (mustBeLoggedIn) => {
   return (req, res, next) => {
     const authHeader = req.headers.authorization || req.headers.Authorization;
+    console.log("siema");
 
     if (!mustBeLoggedIn && !authHeader?.startsWith("Bearer ")) {
       req.isLoggedIn = false;

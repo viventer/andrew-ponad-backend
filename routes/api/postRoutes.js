@@ -4,13 +4,13 @@ const postsController = require("../../controllers/postsController");
 const verifyJWT = require("../../middleware/verifyJWT");
 const verifyRoles = require("../../middleware/verifyRoles");
 
-router.use(verifyJWT(false));
+router.route("/:id/addView").patch(postsController.addPostView);
 
+router.use(verifyJWT(false));
 router.route("/").get(postsController.getAllPosts);
 router.route("/:id").get(postsController.getPost);
 
 router.use(verifyJWT(true));
-
 router
   .route("/:id")
   .patch(verifyRoles("Admin", "Editor", "Creator"), postsController.updatePost)
