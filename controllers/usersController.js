@@ -21,6 +21,13 @@ const deleteUser = async (req, res) => {
   if (!user) {
     return res.status(204).json({ message: `No user matches ID ${id}` });
   }
+
+  if (req.username !== user.username && !req.roles.includes("Admin")) {
+    return res
+      .status(401)
+      .json({ message: "Nie masz dostępu do innych użytkowników" });
+  }
+
   const result = await user.deleteOne();
 
   res.json(result);
@@ -37,7 +44,14 @@ const getUser = async (req, res) => {
       .status(204)
       .json({ message: `No user matches ID ${req.body.id}` });
   }
-  res.json(user);
+
+  if (req.username !== user.username && !req.roles.includes("Admin")) {
+    res
+      .status(401)
+      .json({ message: "Nie masz dostępu do innych użytkowników" });
+  } else {
+    res.json(user);
+  }
 };
 
 // @route PATCH /users/:id
@@ -68,6 +82,12 @@ const updateUser = async (req, res) => {
     return res
       .status(400)
       .json({ message: "Nie znaleziono użytkownika o podanym ID" });
+  }
+
+  if (req.username !== user.username && !req.roles.includes("Admin")) {
+    return res
+      .status(401)
+      .json({ message: "Nie masz dostępu do innych użytkowników" });
   }
 
   const duplicateUsername = await User.findOne({ username })

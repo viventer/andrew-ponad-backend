@@ -12,7 +12,12 @@ const verifyJWT = (mustBeLoggedIn) => {
     if (!authHeader?.startsWith("Bearer ")) return res.sendStatus(401);
     const token = authHeader.split(" ")[1];
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
-      if (err) return res.sendStatus(403);
+      if (err && mustBeLoggedIn) {
+        return res.sendStatus(403);
+      } else if (err) {
+        req.isLoggedIn = false;
+        return next();
+      }
       req.isLoggedIn = true;
       req.username = decoded.UserInfo.username;
       req.roles = decoded.UserInfo.roles;

@@ -8,7 +8,7 @@ router.route("/").get(verifyRoles("Admin"), usersController.getAllUsers);
 router
   .route("/:id")
   .get(usersController.getUser)
-  .patch(verifyRoles("Admin"), usersController.updateUser)
-  .delete(verifyRoles("Admin"), usersController.deleteUser);
+  .patch(usersController.updateUser)
+  .delete(usersController.deleteUser);
 
 module.exports = router;
