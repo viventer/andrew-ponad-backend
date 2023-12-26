@@ -9,8 +9,25 @@ const getAllPosts = async (req, res) => {
     return res.status(400).json({ message: "Nie znaleziono postów" });
   }
 
-  const filteredPosts = await Promise.all(
-    posts.map(async (post) => {
+  const filter = req?.body?.filter;
+
+  let filteredPosts = posts;
+  if (filter && filter.type && filter.value) {
+    const filterAsync = async (post) => {
+      const user = await User.findById(post.author).lean().exec();
+      post.username = user.username;
+      return filter.value == post[filter.type];
+    };
+
+    const filterPromises = posts.map(filterAsync);
+
+    const results = await Promise.all(filterPromises);
+
+    filteredPosts = posts.filter((post, index) => results[index]);
+  }
+
+  const authorizedPosts = await Promise.all(
+    filteredPosts.map(async (post) => {
       const user = await User.findById(post.author).lean().exec();
 
       if (user.username === req.username) {
@@ -28,7 +45,70 @@ const getAllPosts = async (req, res) => {
     })
   );
 
-  const finalPosts = posts.filter((post, index) => filteredPosts[index]);
+  const finalPosts = filteredPosts.filter(
+    (post, index) => authorizedPosts[index]
+  );
+
+  if (!finalPosts?.length) {
+    return res.status(400).json({ message: "Nie znaleziono postów" });
+  }
+
+  const postsWithUser = await Promise.all(
+    finalPosts.map(async (post) => {
+      const user = await User.findById(post.author).lean().exec();
+      return { ...post, username: user.username };
+    })
+  );
+
+  res.json(postsWithUser);
+};
+
+// @route GET /posts/byFilter
+const getPostsByFilter = async (req, res) => {
+  const filter = req.body.filter;
+
+  if (!filter || !filter.type || !filter.value) {
+    return res.status(400).json({ message: "Podaj filtr" });
+  }
+
+  const posts = await Post.find().lean();
+
+  if (!posts?.length) {
+    return res.status(400).json({ message: "Nie znaleziono postów" });
+  }
+
+  const filteredPosts = posts.map((post) => {
+    if (filter.value == post[filter.type]) {
+      return true;
+    } else {
+      return false;
+    }
+  });
+
+  const authorizedPosts = await Promise.all(
+    filteredPosts.map(async (post) => {
+      const user = await User.findById(post.author).lean().exec();
+
+      if (user.username === req.username) {
+        return true;
+      } else if (["unlisted", "private", "draft"].includes(post.visibility)) {
+        return false;
+      } else if (
+        post.visibility === "verifiedOnly" &&
+        (req?.roles?.toString() === ["User"].toString() || !req.isLoggedIn)
+      ) {
+        return false;
+      } else {
+        return true;
+      }
+    })
+  );
+
+  const finalPosts = posts.filter((post, index) => authorizedPosts[index]);
+
+  if (!finalPosts?.length) {
+    return res.status(400).json({ message: "Nie znaleziono postów" });
+  }
 
   const postsWithUser = await Promise.all(
     finalPosts.map(async (post) => {
@@ -53,7 +133,25 @@ const getPost = async (req, res) => {
       .status(204)
       .json({ message: `Nie znaleziono posta o ID: ${req.params.id}` });
   }
-  res.json(post);
+
+  const user = await User.findById(post.author).lean().exec();
+
+  if (user.username === req.username) {
+    return res.json(post);
+  } else if (["private", "draft"].includes(post.visibility)) {
+    return res
+      .status(403)
+      .json({ message: "Nie masz uprawnień do tego posta" });
+  } else if (
+    post.visibility === "verifiedOnly" &&
+    (req?.roles?.toString() === ["User"].toString() || !req.isLoggedIn)
+  ) {
+    return res
+      .status(403)
+      .json({ message: "Nie masz uprawnień do tego posta" });
+  } else {
+    return res.json(post);
+  }
 };
 
 // @route POST /posts
@@ -200,4 +298,5 @@ module.exports = {
   createNewPost,
   updatePost,
   deletePost,
+  getPostsByFilter,
 };
