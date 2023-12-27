@@ -1,6 +1,8 @@
+const checkIfAllExist = require("../helpers/checkIfAllExist");
 const User = require("../model/User");
 const bcrypt = require("bcrypt");
 
+// @route GET /users
 const getAllUsers = async (req, res) => {
   const users = await User.find();
   if (!users) {
@@ -11,15 +13,16 @@ const getAllUsers = async (req, res) => {
   res.json(users);
 };
 
+// @route DELETE /users/:id
 const deleteUser = async (req, res) => {
   if (!req?.params?.id) {
-    return res.status(400).json({ message: "User ID required" });
+    return res.status(400).json({ message: "ID użytkownika jest wymagane" });
   }
   id = req.params.id;
 
   const user = await User.findOne({ _id: id });
   if (!user) {
-    return res.status(204).json({ message: `No user matches ID ${id}` });
+    return res.status(204).json({ message: `Nie ma użytkownika o podanym id: ${id}` });
   }
 
   if (req.username !== user.username && !req.roles.includes("Admin")) {
@@ -33,16 +36,17 @@ const deleteUser = async (req, res) => {
   res.json(result);
 };
 
+// @route GET /users/:id
 const getUser = async (req, res) => {
   if (!req?.params?.id) {
-    return res.status(400).json({ message: "User ID required" });
+    return res.status(400).json({ message: "Wymagane ID użytkownika" });
   }
 
   const user = await User.findOne({ _id: req.params.id });
   if (!user) {
     return res
       .status(204)
-      .json({ message: `No user matches ID ${req.body.id}` });
+      .json({ message: `Nie ma użytkownika o podanym id: ${req.body.id}` });
   }
 
   if (req.username !== user.username && !req.roles.includes("Admin")) {
@@ -63,14 +67,7 @@ const updateUser = async (req, res) => {
 
   const { username, roles, email, firstName, lastName, password } = req.body;
 
-  if (
-    !username ||
-    !Array.isArray(roles) ||
-    !roles.length ||
-    !email ||
-    !firstName ||
-    !lastName
-  ) {
+  if (!checkIfAllExist([username, roles, email, firstName, lastName])) {
     return res
       .status(400)
       .json({ message: "Wszystkie pola poza hasłem są wymagane" });

@@ -333,3 +333,9 @@
 20231227	08:12:00	70cb63e3-fa95-45c6-8219-f5daeafeb71f	GET	undefined	/posts/5869dd863bd07e0582507ef
 20231227	08:12:05	8215dcfb-e426-4400-b21d-4d99ecbdda8e	GET	undefined	/posts/665869dd863bd07e0582507ef
 20231227	08:12:16	fa7ebc29-69b2-42db-8cf2-fc6393b4bb4b	GET	undefined	/posts/6589dd9c35bd07e0582507f4
+20231227	20:04:08	5c87bbd9-0f31-4c5c-9c5e-ec8c5f1c772d	POST	undefined	/register
+20231227	20:04:15	7e1941ee-0466-47b3-9a09-d0e2b9c9a2dd	POST	undefined	/register
+20231227	20:04:30	a22dc813-83ca-4346-bb5f-499756383eef	POST	undefined	/register
+20231227	20:04:34	2b2733f8-53fd-4773-860f-da24acb0522d	POST	undefined	/register
+20231227	20:04:38	40495633-e327-4766-98ea-0952a8beff76	POST	undefined	/register
+20231227	20:04:43	050fd203-d112-4671-8769-bbffae398058	POST	undefined	/register

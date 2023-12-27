@@ -4,7 +4,6 @@ const jwt = require("jsonwebtoken");
 
 const handleLogin = async (req, res) => {
   const cookies = req.cookies;
-  console.log(`cookie available at login: ${JSON.stringify(cookies)}`);
   const { username, password } = req.body;
   if (!username || !password)
     return res.status(400).json({ message: "Uzupełnij wymagane pola!" });
@@ -41,7 +40,6 @@ const handleLogin = async (req, res) => {
       const foundToken = await User.findOne({ refreshToken }).exec();
 
       if (!foundToken) {
-        console.log("attempted refresh token reuse at login!");
         newRefreshTokenArray = [];
       }
 
@@ -54,7 +52,6 @@ const handleLogin = async (req, res) => {
 
     foundUser.refreshToken = [...newRefreshTokenArray, newRefreshToken];
     const result = await foundUser.save();
-    console.log(result);
 
     res.cookie("jwt", newRefreshToken, {
       httpOnly: true,

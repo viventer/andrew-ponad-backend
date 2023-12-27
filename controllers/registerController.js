@@ -1,10 +1,13 @@
+const checkIfAllExist = require("../helpers/checkIfAllExist");
 const User = require("../model/User");
 const bcrypt = require("bcrypt");
 
 const handleNewUser = async (req, res) => {
   const { username, password, firstName, lastName, email } = req.body;
-  if (!username || !password || !firstName || !lastName || !email)
+
+  if (!checkIfAllExist([username, password, firstName, lastName, email]))
     return res.status(400).json({ message: "Uzupełnij wszystkie pola!" });
+
   const duplicateUsername = await User.findOne({ username }).exec();
   const duplicateEmail = await User.findOne({ email }).exec();
   if (duplicateUsername || duplicateEmail) return res.sendStatus(409);
@@ -18,8 +21,6 @@ const handleNewUser = async (req, res) => {
       email,
       password: hashedPwd,
     });
-
-    console.log(result);
 
     res
       .status(201)
