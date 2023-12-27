@@ -1,11 +1,13 @@
 const Post = require("../model/Post");
 const User = require("../model/User");
+const checkIfAllExist = require("../helpers/checkIfAllExist");
 
 // @route GET /posts
 const getAllPosts = async (req, res) => {
   const posts = await Post.find().lean();
 
-  if (!posts?.length) {
+  let isEmpty = checkIfEmpty(posts);
+  if (isEmpty) {
     return res.status(400).json({ message: "Nie znaleziono postów" });
   }
 
@@ -27,87 +29,18 @@ const getAllPosts = async (req, res) => {
   }
 
   const authorizedPosts = await Promise.all(
-    filteredPosts.map(async (post) => {
-      const user = await User.findById(post.author).lean().exec();
-
-      if (user.username === req.username) {
-        return true;
-      } else if (["unlisted", "private", "draft"].includes(post.visibility)) {
-        return false;
-      } else if (
-        post.visibility === "verifiedOnly" &&
-        (req?.roles?.toString() === ["User"].toString() || !req.isLoggedIn)
-      ) {
-        return false;
-      } else {
-        return true;
-      }
-    })
+    filteredPosts.map((post) => checkIfAuthorized(post, req))
   );
 
   const finalPosts = filteredPosts.filter(
     (post, index) => authorizedPosts[index]
   );
 
-  if (!finalPosts?.length) {
-    return res.status(400).json({ message: "Nie znaleziono postów" });
-  }
-
-  const postsWithUser = await Promise.all(
-    finalPosts.map(async (post) => {
-      const user = await User.findById(post.author).lean().exec();
-      return { ...post, username: user.username };
-    })
-  );
-
-  res.json(postsWithUser);
-};
-
-// @route GET /posts/byFilter
-const getPostsByFilter = async (req, res) => {
-  const filter = req.body.filter;
-
-  if (!filter || !filter.type || !filter.value) {
-    return res.status(400).json({ message: "Podaj filtr" });
-  }
-
-  const posts = await Post.find().lean();
-
-  if (!posts?.length) {
-    return res.status(400).json({ message: "Nie znaleziono postów" });
-  }
-
-  const filteredPosts = posts.map((post) => {
-    if (filter.value == post[filter.type]) {
-      return true;
-    } else {
-      return false;
-    }
-  });
-
-  const authorizedPosts = await Promise.all(
-    filteredPosts.map(async (post) => {
-      const user = await User.findById(post.author).lean().exec();
-
-      if (user.username === req.username) {
-        return true;
-      } else if (["unlisted", "private", "draft"].includes(post.visibility)) {
-        return false;
-      } else if (
-        post.visibility === "verifiedOnly" &&
-        (req?.roles?.toString() === ["User"].toString() || !req.isLoggedIn)
-      ) {
-        return false;
-      } else {
-        return true;
-      }
-    })
-  );
-
-  const finalPosts = posts.filter((post, index) => authorizedPosts[index]);
-
-  if (!finalPosts?.length) {
-    return res.status(400).json({ message: "Nie znaleziono postów" });
+  isEmpty = checkIfEmpty(posts);
+  if (isEmpty) {
+    return res
+      .status(400)
+      .json({ message: "Nie znaleziono postów do których masz dostęp" });
   }
 
   const postsWithUser = await Promise.all(
@@ -127,6 +60,10 @@ const getPost = async (req, res) => {
   }
   const id = req.params.id;
 
+  if (id.length !== 24) {
+    return res.status(400).json({ message: "Podane ID jest nieprawidłowe" });
+  }
+
   const post = await Post.findOne({ _id: id });
   if (!post) {
     return res
@@ -134,23 +71,13 @@ const getPost = async (req, res) => {
       .json({ message: `Nie znaleziono posta o ID: ${req.params.id}` });
   }
 
-  const user = await User.findById(post.author).lean().exec();
-
-  if (user.username === req.username) {
+  const isAuthorized = await checkIfAuthorized(post, req);
+  if (isAuthorized) {
     return res.json(post);
-  } else if (["private", "draft"].includes(post.visibility)) {
-    return res
-      .status(403)
-      .json({ message: "Nie masz uprawnień do tego posta" });
-  } else if (
-    post.visibility === "verifiedOnly" &&
-    (req?.roles?.toString() === ["User"].toString() || !req.isLoggedIn)
-  ) {
-    return res
-      .status(403)
-      .json({ message: "Nie masz uprawnień do tego posta" });
   } else {
-    return res.json(post);
+    return res
+      .status(403)
+      .json({ message: "Nie masz uprawnień do tego posta" });
   }
 };
 
@@ -158,8 +85,17 @@ const getPost = async (req, res) => {
 const createNewPost = async (req, res) => {
   const { author, title, thumbnail, visibility, content, category } = req.body;
 
-  if (!author || !title || !thumbnail || !visibility || !content || !category) {
-    return res.status(400).json({ message: "Wszystkie pola są wymagane" });
+  const allExist = checkIfAllExist([
+    author,
+    title,
+    thumbnail,
+    visibility,
+    content,
+    category,
+  ]);
+
+  if (!allExist) {
+    return res.status(403).json({ message: "Uzupełnij wymgane pola" });
   }
 
   const duplicate = await Post.findOne({ title })
@@ -196,17 +132,22 @@ const updatePost = async (req, res) => {
   }
   const id = req.params.id;
 
+  if (id.length !== 24) {
+    return res.status(400).json({ message: "Podane ID jest nieprawidłowe" });
+  }
+
   const { author, title, thumbnail, visibility, content, category } = req.body;
 
-  if (
-    !id ||
-    !author ||
-    !title ||
-    !thumbnail ||
-    !visibility ||
-    !content ||
-    !category
-  ) {
+  const allExist = checkIfAllExist([
+    id,
+    author,
+    title,
+    thumbnail,
+    visibility,
+    content,
+    category,
+  ]);
+  if (!allExist) {
     return res.status(400).json({ message: "Wszystkie pola są wymagane" });
   }
 
@@ -222,11 +163,8 @@ const updatePost = async (req, res) => {
       .json({ message: "Użytkownik o podanym ID autora nie istnieje" });
   }
 
-  if (
-    creator.username != req.username &&
-    !req.roles.includes("Admin") &&
-    !req.roles.includes("Editor")
-  ) {
+  const canEdit = checkIfCanEdit(creator, req);
+  if (!canEdit) {
     return res
       .status(403)
       .json({ message: "Możesz edytować tylko swoje posty!" });
@@ -262,6 +200,10 @@ const deletePost = async (req, res) => {
   }
   const id = req.params.id;
 
+  if (id.length !== 24) {
+    return res.status(400).json({ message: "Podane ID jest nieprawidłowe" });
+  }
+
   const post = await Post.findById(id).exec();
 
   if (!post) {
@@ -275,11 +217,8 @@ const deletePost = async (req, res) => {
       .json({ message: "Użytkownik o podanym ID autora nie istnieje" });
   }
 
-  if (
-    creator.username != req.username &&
-    !req.roles.includes("Admin") &&
-    !req.roles.includes("Editor")
-  ) {
+  const canEdit = checkIfCanEdit(creator, req);
+  if (!canEdit) {
     return res
       .status(403)
       .json({ message: "Możesz usuwać tylko swoje posty!" });
@@ -298,6 +237,10 @@ const addPostView = async (req, res) => {
   }
   const id = req.params.id;
 
+  if (id.length !== 24) {
+    return res.status(400).json({ message: "Podane ID jest nieprawidłowe" });
+  }
+
   const post = await Post.findById(id).exec();
   if (!post) {
     return res.status(400).json({ message: "Nie odnaleziono posta" });
@@ -310,12 +253,48 @@ const addPostView = async (req, res) => {
   res.json(`Post: '${updatedPost.title}' został zaaktualizowany`);
 };
 
+const checkIfEmpty = (postsList) => {
+  if (postsList.length == 0) {
+    return false;
+  } else {
+    return true;
+  }
+};
+
+const checkIfAuthorized = async (post, req) => {
+  const user = await User.findById(post.author).lean().exec();
+
+  if (user.username === req.username) {
+    return true;
+  } else if (["unlisted", "private", "draft"].includes(post.visibility)) {
+    return false;
+  } else if (
+    post.visibility === "verifiedOnly" &&
+    (req?.roles?.toString() === ["User"].toString() || !req.isLoggedIn)
+  ) {
+    return false;
+  } else {
+    return true;
+  }
+};
+
+const checkIfCanEdit = (creator, req) => {
+  if (
+    creator.username !== req.username &&
+    !req.roles.includes("Admin") &&
+    !req.roles.includes("Editor")
+  ) {
+    return false;
+  } else {
+    return true;
+  }
+};
+
 module.exports = {
   getAllPosts,
   getPost,
   createNewPost,
   updatePost,
   deletePost,
-  getPostsByFilter,
   addPostView,
 };
