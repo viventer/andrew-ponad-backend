@@ -3,6 +3,7 @@ const User = require("../model/User");
 const bcrypt = require("bcrypt");
 const passwordValidator = require("password-validator");
 const validator = require("validator");
+const Filter = require("bad-words");
 
 const handleNewUser = async (req, res) => {
   const { username, password, firstName, lastName, email } = req.body;
@@ -23,6 +24,9 @@ const handleNewUser = async (req, res) => {
       .status(400)
       .json({ message: "Przesłane dane są nieprawidłowe." });
   }
+
+  const filter = new Filter();
+  filter.addWords("kurwa", "japierdole");
 
   try {
     const hashedPwd = await bcrypt.hash(password, 10);
