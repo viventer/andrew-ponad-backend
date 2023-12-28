@@ -13,7 +13,8 @@
     "mongoose": "^8.0.3",
     "mongoose-sequence": "^6.0.0",
     "password-validator": "^5.3.0",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "validator": "^13.11.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"

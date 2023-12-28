@@ -2,6 +2,7 @@ const checkIfAllExist = require("../helpers/checkIfAllExist");
 const User = require("../model/User");
 const bcrypt = require("bcrypt");
 const passwordValidator = require("password-validator");
+const validator = require("validator");
 
 const handleNewUser = async (req, res) => {
   const { username, password, firstName, lastName, email } = req.body;
@@ -15,9 +16,9 @@ const handleNewUser = async (req, res) => {
 
   const isUsernameValid = validateUsername(username);
   const isPasswordValid = validatePassword(password);
-  // const isNameValid = validateName(firstName, lastName);
-  // const isEmailValid = validateName(email);
-  if (!isUsernameValid || !isPasswordValid) {
+  const isNameValid = validateName(firstName, lastName);
+  const isEmailValid = validateEmail(email);
+  if (!isUsernameValid || !isPasswordValid || !isEmailValid || !isNameValid) {
     return res
       .status(400)
       .json({ message: "Przesłane dane są nieprawidłowe." });
@@ -55,11 +56,8 @@ const validateUsername = (username) => {
   const regex =
     /^(?!.*_{2,})(?=.{1,20}$)[a-zA-Z0-9]*[a-zA-Z][a-zA-Z0-9]*_?[a-zA-Z0-9]*[a-zA-Z][a-zA-Z0-9]*[a-zA-Z0-9]$/;
 
-  if (regex.test(username)) {
-    return true;
-  } else {
-    return false;
-  }
+  const isValid = regex.test(username);
+  return isValid;
 };
 
 const validatePassword = (password) => {
@@ -81,16 +79,20 @@ const validatePassword = (password) => {
     .symbols(); // min. 1 special character
 
   const isValid = schema.validate(password);
-  if (isValid) {
-    return true;
-  } else {
-    return false;
-  }
+  return isValid;
 };
 
-const validateEmail = (email) => {};
+const validateEmail = (email) => {
+  const isValid = validator.isEmail(email);
+  return isValid;
+};
 
-const validateName = (firstName, lastName) => {};
+const validateName = (firstName, lastName) => {
+  const regex = /^[a-zA-Z]{3,50}(?:[-\s'][a-zA-Z]+)*$/;
+
+  const isValid = regex.test(firstName) && regex.test(lastName);
+  return isValid;
+};
 
 module.exports = {
   handleNewUser,
