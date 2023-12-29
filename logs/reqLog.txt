@@ -550,3 +550,6 @@
 20231229	07:54:22	c12d1fb3-60c9-497c-a57b-dad2c95a5fd0	DELETE	undefined	/users/658e6c86b2e3f408822f996d
 20231229	07:54:27	a9efb601-cbe8-46db-b692-87f6b18adc18	GET	undefined	/users/658e6c86b2e3f408822f996d
 20231229	07:54:44	e517f6aa-1694-48cc-b706-2edef7dc81ee	PATCH	undefined	/posts/6589ddcb35bd07e058250803/addView
+20231229	08:06:02	809ed04d-ff74-40c0-89f4-a80b599ab27d	POST	undefined	/register
+20231229	08:06:15	420461b9-aa71-4183-8e2e-d4c7bbbfaac9	POST	undefined	/register
+20231229	08:06:21	c3058d7d-a886-4b09-add5-2a9e4ab63e9c	POST	undefined	/register

@@ -106,7 +106,8 @@ const validateEmail = (email) => {
 };
 
 const validateName = (firstName, lastName) => {
-  const regex = /^[a-zA-Z]{3,50}(?:[-\s'][a-zA-Z]+)*$/;
+  const regex =
+    /^[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]{3,50}(?:[-\s'][a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]+)*$/;
 
   const isValid = regex.test(firstName) && regex.test(lastName);
   return isValid;
