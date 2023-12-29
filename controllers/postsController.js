@@ -1,5 +1,6 @@
 const Post = require("../model/Post");
 const User = require("../model/User");
+
 const checkIfAllExist = require("../helpers/checkIfAllExist");
 
 // @route GET /posts
@@ -8,6 +9,7 @@ const getAllPosts = async (req, res) => {
 
   let isEmpty = checkIfEmpty(posts);
   if (isEmpty) {
+    console.log(isEmpty);
     return res.status(400).json({ message: "Nie znaleziono postów" });
   }
 
@@ -254,11 +256,7 @@ const addPostView = async (req, res) => {
 };
 
 const checkIfEmpty = (postsList) => {
-  if (postsList.length == 0) {
-    return false;
-  } else {
-    return true;
-  }
+  return postsList.length == 0;
 };
 
 const checkIfAuthorized = async (post, req) => {

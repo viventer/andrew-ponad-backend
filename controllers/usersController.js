@@ -1,6 +1,6 @@
-const checkIfAllExist = require("../helpers/checkIfAllExist");
 const User = require("../model/User");
 const bcrypt = require("bcrypt");
+const checkIfAllExist = require("../helpers/checkIfAllExist");
 
 // @route GET /users
 const getAllUsers = async (req, res) => {
@@ -22,7 +22,9 @@ const deleteUser = async (req, res) => {
 
   const user = await User.findOne({ _id: id });
   if (!user) {
-    return res.status(204).json({ message: `Nie ma użytkownika o podanym id: ${id}` });
+    return res
+      .status(204)
+      .json({ message: `Nie ma użytkownika o podanym id: ${id}` });
   }
 
   if (req.username !== user.username && !req.roles.includes("Admin")) {

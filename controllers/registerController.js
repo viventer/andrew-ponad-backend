@@ -1,10 +1,12 @@
 const checkIfAllExist = require("../helpers/checkIfAllExist");
-const User = require("../model/User");
+
+const forbiddenWordsList = require("../data/forbiddenWordsList.json");
+const Filter = require("bad-words");
 const bcrypt = require("bcrypt");
 const passwordValidator = require("password-validator");
 const validator = require("validator");
-const Filter = require("bad-words");
-const forbiddenWordsList = require("../helpers/forbiddenWordsList.json");
+
+const User = require("../model/User");
 
 const handleNewUser = async (req, res) => {
   const { username, password, firstName, lastName, email } = req.body;
