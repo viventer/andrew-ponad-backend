@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 const passwordValidator = require("password-validator");
 const validator = require("validator");
 const Filter = require("bad-words");
+const forbiddenWordsList = require("../helpers/forbiddenWordsList.json");
 
 const handleNewUser = async (req, res) => {
   const { username, password, firstName, lastName, email } = req.body;
@@ -19,14 +20,25 @@ const handleNewUser = async (req, res) => {
   const isPasswordValid = validatePassword(password);
   const isNameValid = validateName(firstName, lastName);
   const isEmailValid = validateEmail(email);
-  if (!isUsernameValid || !isPasswordValid || !isEmailValid || !isNameValid) {
+
+  const filter = new Filter();
+  filter.addWords.apply(filter, forbiddenWordsList);
+  const usernameWithoutUnderscore = username.replace(/_/g, " ");
+  isOffensive = filter.isProfane(
+    `${usernameWithoutUnderscore} ${firstName} ${lastName} ${email}`
+  );
+
+  if (
+    !isUsernameValid ||
+    !isPasswordValid ||
+    !isEmailValid ||
+    !isNameValid ||
+    isOffensive
+  ) {
     return res
       .status(400)
       .json({ message: "Przesłane dane są nieprawidłowe." });
   }
-
-  const filter = new Filter();
-  filter.addWords("kurwa", "japierdole");
 
   try {
     const hashedPwd = await bcrypt.hash(password, 10);
