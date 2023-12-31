@@ -108,8 +108,10 @@ const updateUser = async (req, res) => {
       .json({ message: "Użytkownik o takiej nazwie lub mailu już istnieje!" });
   }
 
+  if (req.roles.includes("Admin")) {
+    user.roles = roles;
+  }
   user.username = username;
-  user.roles = roles;
   user.email = email;
   user.firstName = firstName;
   user.lastName = lastName;

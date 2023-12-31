@@ -5,3 +5,4 @@
 20231226	08:16:23	c2aad2bf-cb17-4e86-9dff-27fecfa965f5	SyntaxError: Unexpected end of JSON input
 20231226	08:18:45	fd831570-c933-429b-ac40-523e9dd72301	SyntaxError: Unexpected end of JSON input
 20231226	08:22:42	f66ec35e-9efc-4b2a-bf8c-8c867f5bbc8d	SyntaxError: Unexpected end of JSON input
+20231230	09:15:24	f0eb26ce-e101-4040-a230-abe71c07980c	Error: Not allowed by CORS
