@@ -72,9 +72,10 @@ const validateUsername = (username) => {
   - must contain at least 2 letters
   */
   const regex =
-    /^(?!.*_{2,})(?=.{1,20}$)[a-zA-Z0-9]*[a-zA-Z][a-zA-Z0-9]*_?[a-zA-Z0-9]*[a-zA-Z][a-zA-Z0-9]*[a-zA-Z0-9]$/;
+    /^(?!.*_{3,})(?=.{3,20}$)[a-zA-Z0-9]+(_[a-zA-Z0-9]*)*[a-zA-Z0-9]+$/;
+  const twoLettersRegex = /.*[a-zA-Z].*[a-zA-Z].*/;
 
-  const isValid = regex.test(username);
+  const isValid = regex.test(username) && twoLettersRegex.test(username);
   return isValid;
 };
 

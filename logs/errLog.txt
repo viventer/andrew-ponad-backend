@@ -6,3 +6,7 @@
 20231226	08:18:45	fd831570-c933-429b-ac40-523e9dd72301	SyntaxError: Unexpected end of JSON input
 20231226	08:22:42	f66ec35e-9efc-4b2a-bf8c-8c867f5bbc8d	SyntaxError: Unexpected end of JSON input
 20231230	09:15:24	f0eb26ce-e101-4040-a230-abe71c07980c	Error: Not allowed by CORS
+20240104	20:34:31	e23ad0f7-573a-4886-b4ab-3dfddcbbaaa7	TypeError: logEvents is not a function
+20240104	20:34:33	35afa8ee-ffb9-48ed-91de-2f83fab97e5d	TypeError: logEvents is not a function
+20240104	20:34:34	c5d80c7b-465d-4697-9ca5-f3721f77f05e	TypeError: logEvents is not a function
+20240104	20:34:35	f895c4ad-dcf2-4800-939e-851ba5ab63b2	TypeError: logEvents is not a function
