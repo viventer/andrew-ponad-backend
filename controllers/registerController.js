@@ -30,16 +30,16 @@ const handleNewUser = async (req, res) => {
     `${usernameWithoutUnderscore} ${firstName} ${lastName} ${email}`
   );
 
-  if (
-    !isUsernameValid ||
-    !isPasswordValid ||
-    !isEmailValid ||
-    !isNameValid ||
-    isOffensive
-  ) {
+  if (!isUsernameValid || !isPasswordValid || !isEmailValid || !isNameValid) {
     return res
       .status(400)
       .json({ message: "Przesłane dane są nieprawidłowe." });
+  }
+
+  if (isOffensive) {
+    return res
+      .status(422)
+      .json({ message: "Twoje dane zawierają obraźliwe słowa." });
   }
 
   try {
