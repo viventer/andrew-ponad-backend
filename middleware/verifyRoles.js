@@ -1,6 +1,6 @@
 const verifyRoles = (...allowedRoles) => {
   return (req, res, next) => {
-    if (!req?.roles) return res.sendStatus(401);
+    if (!req?.roles) return res.json({ message: "roles error" }).status(401);
 
     const rolesArray = [...allowedRoles];
 
@@ -8,7 +8,7 @@ const verifyRoles = (...allowedRoles) => {
       .map((role) => rolesArray.includes(role))
       .find((value) => value === true);
 
-    if (!result) return res.sendStatus(401);
+    if (!result) return res.status(401).json({ message: "verify roles error" });
     next();
   };
 };

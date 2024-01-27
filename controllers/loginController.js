@@ -5,12 +5,14 @@ const jwt = require("jsonwebtoken");
 
 const handleLogin = async (req, res) => {
   const cookies = req.cookies;
+  console.log(`cookie available at login: ${JSON.stringify(cookies)}`);
   const { username, password } = req.body;
+
   if (!username || !password)
     return res.status(400).json({ message: "Uzupełnij wymagane pola!" });
 
   const foundUser = await User.findOne({ username }).exec();
-  if (!foundUser) return res.sendStatus(401);
+  if (!foundUser) return res.status(401).json({ message: "login error" });
 
   const match = await bcrypt.compare(password, foundUser.password);
   if (match) {
@@ -41,28 +43,28 @@ const handleLogin = async (req, res) => {
       const foundToken = await User.findOne({ refreshToken }).exec();
 
       if (!foundToken) {
+        console.log("attempted refresh...");
         newRefreshTokenArray = [];
       }
 
       res.clearCookie("jwt", {
         httpOnly: true,
-        sameSite: "None",
-        secure: true,
+        maxAge: 24 * 60 * 60 * 1000,
       });
     }
 
     foundUser.refreshToken = [...newRefreshTokenArray, newRefreshToken];
     const result = await foundUser.save();
+    console.log(newRefreshToken);
 
     res.cookie("jwt", newRefreshToken, {
       httpOnly: true,
-      sameSite: "None",
       maxAge: 24 * 60 * 60 * 1000,
-      secure: true,
     });
+
     res.json({ accessToken, userId: foundUser.id });
   } else {
-    res.sendStatus(401);
+    res.status(401).json({ message: "login error" });
   }
 };
 

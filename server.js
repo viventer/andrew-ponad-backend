@@ -14,6 +14,8 @@ const errorHandler = require("./middleware/errorHandler");
 const verifyJWT = require("./middleware/verifyJWT");
 const credentials = require("./middleware/credentials");
 
+const { createProxyMiddleware } = require("http-proxy-middleware");
+
 const mongoose = require("mongoose");
 const connectDB = require("./config/dbConn");
 
@@ -52,6 +54,11 @@ app.all("*", (req, res) => {
 });
 
 app.use(errorHandler);
+
+app.use(
+  "/",
+  createProxyMiddleware({ target: "http://localhost:5173", changeOrigin: true })
+);
 
 mongoose.connection.once("open", () => {
   console.log("Connected to MongoDB");

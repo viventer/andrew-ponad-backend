@@ -9,7 +9,9 @@ const verifyJWT = (mustBeLoggedIn) => {
       return next();
     }
 
-    if (!authHeader?.startsWith("Bearer ")) return res.sendStatus(401);
+    if (!authHeader?.startsWith("Bearer ")) {
+      return res.status(401).json({ message: "verify jwt error" });
+    }
     const token = authHeader.split(" ")[1];
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
       if (err && mustBeLoggedIn) {
