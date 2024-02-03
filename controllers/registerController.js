@@ -26,7 +26,7 @@ const handleNewUser = async (req, res) => {
   const filter = new Filter();
   filter.addWords.apply(filter, forbiddenWordsList);
   const usernameWithoutUnderscore = username.replace(/_/g, " ");
-  isOffensive = filter.isProfane(
+  const isOffensive = filter.isProfane(
     `${usernameWithoutUnderscore} ${firstName} ${lastName} ${email}`
   );
 
