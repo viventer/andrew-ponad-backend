@@ -1,6 +1,13 @@
 const User = require("../model/User");
 const bcrypt = require("bcrypt");
 const checkIfAllExist = require("../helpers/checkIfAllExist");
+const {
+  validateUsername,
+  validateOffensiveness,
+  validateEmail,
+  validateName,
+  validatePassword,
+} = require("../helpers/validations");
 
 // @route GET /users
 const getAllUsers = async (req, res) => {
@@ -69,10 +76,10 @@ const updateUser = async (req, res) => {
 
   const { username, roles, email, firstName, lastName, password } = req.body;
 
-  if (!checkIfAllExist([username, roles, email, firstName, lastName])) {
+  if (!checkIfAllExist([username, roles])) {
     return res
       .status(400)
-      .json({ message: "Wszystkie pola poza hasłem są wymagane" });
+      .json({ message: "Nazwa użytkownika i role są wymagane" });
   }
 
   const user = await User.findById(id).exec();
@@ -108,15 +115,34 @@ const updateUser = async (req, res) => {
       .json({ message: "Użytkownik o takiej nazwie lub mailu już istnieje!" });
   }
 
-  if (req.roles.includes("Admin")) {
-    user.roles = roles;
+  if (req.roles.includes("Admin")) user.roles = roles;
+  if (username) {
+    const isUsernameValid = validateUsername(username);
+    if (!isUsernameValid) {
+      res.status(400).json({ message: "Przesłane dane są nieprawidłowe." });
+    }
+    user.username = username;
   }
-  user.username = username;
-  user.email = email;
-  user.firstName = firstName;
-  user.lastName = lastName;
-
+  if (email) {
+    const isEmailValid = validateEmail(email);
+    if (!isEmailValid) {
+      res.status(400).json({ message: "Przesłane dane są nieprawidłowe." });
+    }
+    user.email = email;
+  }
+  if (firstName && lastName) {
+    const isNameValid = validateName(firstName, lastName);
+    if (!isNameValid) {
+      res.status(400).json({ message: "Przesłane dane są nieprawidłowe." });
+    }
+    user.firstName = firstName;
+    user.lastName = lastName;
+  }
   if (password) {
+    const isPasswordValid = validatePassword(password);
+    if (!isPasswordValid) {
+      res.status(400).json({ message: "Przesłane dane są nieprawidłowe." });
+    }
     user.password = await bcrypt.hash(password, 10);
   }
 
