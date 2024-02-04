@@ -76,6 +76,8 @@ const updateUser = async (req, res) => {
 
   const { username, roles, email, firstName, lastName, password } = req.body;
 
+  console.log(req.body);
+
   if (!checkIfAllExist([username, roles])) {
     return res
       .status(400)
@@ -119,29 +121,42 @@ const updateUser = async (req, res) => {
   if (username) {
     const isUsernameValid = validateUsername(username);
     if (!isUsernameValid) {
-      res.status(400).json({ message: "Przesłane dane są nieprawidłowe." });
+      return res
+        .status(400)
+        .json({ message: "Przesłane dane są nieprawidłowe." });
     }
     user.username = username;
   }
   if (email) {
     const isEmailValid = validateEmail(email);
     if (!isEmailValid) {
-      res.status(400).json({ message: "Przesłane dane są nieprawidłowe." });
+      return res
+        .status(400)
+        .json({ message: "Przesłane dane są nieprawidłowe." });
     }
     user.email = email;
   }
   if (firstName && lastName) {
     const isNameValid = validateName(firstName, lastName);
     if (!isNameValid) {
-      res.status(400).json({ message: "Przesłane dane są nieprawidłowe." });
+      return res
+        .status(400)
+        .json({ message: "Przesłane dane są nieprawidłowe." });
     }
     user.firstName = firstName;
     user.lastName = lastName;
   }
   if (password) {
     const isPasswordValid = validatePassword(password);
+    const isPasswordSame = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      res.status(400).json({ message: "Przesłane dane są nieprawidłowe." });
+      return res
+        .status(400)
+        .json({ message: "Przesłane dane są nieprawidłowe." });
+    } else if (isPasswordSame) {
+      return res
+        .status(400)
+        .json({ message: "Nowe hasło musi być inne od starego" });
     }
     user.password = await bcrypt.hash(password, 10);
   }
