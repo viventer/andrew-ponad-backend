@@ -2,6 +2,7 @@ const User = require("../model/User");
 
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const nodemon = require("nodemon");
 
 const handleLogin = async (req, res) => {
   const cookies = req.cookies;
@@ -50,6 +51,7 @@ const handleLogin = async (req, res) => {
       res.clearCookie("jwt", {
         httpOnly: true,
         maxAge: 24 * 60 * 60 * 1000,
+        sameSite: "none"
       });
     }
 
@@ -60,6 +62,7 @@ const handleLogin = async (req, res) => {
     res.cookie("jwt", newRefreshToken, {
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000,
+      sameSite: "none",
     });
 
     res.json({ accessToken, userId: foundUser.id });

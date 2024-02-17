@@ -17,7 +17,13 @@ const getAllUsers = async (req, res) => {
       .status(204)
       .json({ message: "Nie znaleziono żadnych użytkowników" });
   }
-  res.json(users);
+
+  const safeUsersData = users.map((user) => {
+    const { password, refreshToken, ...safeUserData } = user.toObject();
+    return safeUserData;
+  });
+
+  res.json(safeUsersData);
 };
 
 // @route DELETE /users/:id
@@ -58,12 +64,14 @@ const getUser = async (req, res) => {
       .json({ message: `Nie ma użytkownika o podanym id: ${req.body.id}` });
   }
 
+  const { password, refreshToken, ...safeUserData } = user.toObject();
+
   if (req.username !== user.username && !req.roles.includes("Admin")) {
     res
       .status(401)
       .json({ message: "Nie masz dostępu do innych użytkowników" });
   } else {
-    res.json(user);
+    res.json(safeUserData);
   }
 };
 

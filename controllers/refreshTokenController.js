@@ -7,7 +7,7 @@ const handleRefreshToken = async (req, res) => {
   if (!cookies?.jwt)
     return res.status(401).json({ message: "Problem with cookies" });
   const refreshToken = cookies.jwt;
-  res.clearCookie("jwt", { httpOnly: true });
+  res.clearCookie("jwt", { httpOnly: true, sameSite: "none" });
 
   try {
     // Verify the refresh token
@@ -54,6 +54,7 @@ const handleRefreshToken = async (req, res) => {
     res.cookie("jwt", newRefreshToken, {
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000,
+      sameSite: "none",
     });
 
     // Send the new access token in the response
