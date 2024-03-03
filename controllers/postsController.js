@@ -261,8 +261,7 @@ const checkIfEmpty = (postsList) => {
 const checkIfAuthorized = async (post, req) => {
   const user = await User.findById(post.author).lean().exec();
 
-  console.log(user.username, req.username);
-  if (user.username === req.username) {
+  if (user?.username === req.username) {
     return true;
   } else if (["unlisted", "private", "draft"].includes(post.visibility)) {
     return false;
