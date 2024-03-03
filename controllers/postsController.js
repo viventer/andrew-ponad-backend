@@ -9,7 +9,6 @@ const getAllPosts = async (req, res) => {
 
   let isEmpty = checkIfEmpty(posts);
   if (isEmpty) {
-    console.log(isEmpty);
     return res.status(400).json({ message: "Nie znaleziono postów" });
   }
 
@@ -97,7 +96,7 @@ const createNewPost = async (req, res) => {
   ]);
 
   if (!allExist) {
-    return res.status(403).json({ message: "Uzupełnij wymgane pola" });
+    return res.status(400).json({ message: "Uzupełnij wymgane pola" });
   }
 
   const duplicate = await Post.findOne({ title })
@@ -262,6 +261,7 @@ const checkIfEmpty = (postsList) => {
 const checkIfAuthorized = async (post, req) => {
   const user = await User.findById(post.author).lean().exec();
 
+  console.log(user.username, req.username);
   if (user.username === req.username) {
     return true;
   } else if (["unlisted", "private", "draft"].includes(post.visibility)) {

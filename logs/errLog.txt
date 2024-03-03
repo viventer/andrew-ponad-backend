@@ -12,3 +12,17 @@
 20240104	20:34:35	f895c4ad-dcf2-4800-939e-851ba5ab63b2	TypeError: logEvents is not a function
 20240120	07:49:43	7e3d7492-08bd-4f21-a1d0-6874729375ed	TypeError: logEvents is not a function
 20240216	08:14:09	a90f023e-26f5-4da5-b614-259a40bfcfb3	Error: Not allowed by CORS
+20240302	08:23:16	6cfdc415-2df4-41c7-b14b-cad6dab82332	Error: Not allowed by CORS
+20240302	08:23:18	afbe4d8a-4829-4b33-ab98-ff4e03e8f96e	Error: Not allowed by CORS
+20240302	08:23:19	8de4e62c-7c57-4279-b56c-7f3a76e1b6c0	Error: Not allowed by CORS
+20240302	08:23:20	62e314c0-2a95-487f-8e16-2ce857aa719e	Error: Not allowed by CORS
+20240302	08:23:21	860be305-6801-4a91-bb5d-cca3f0856a80	Error: Not allowed by CORS
+20240302	08:24:16	ad0154dd-21a4-46bb-a91a-6dbcae0682de	Error: Not allowed by CORS
+20240302	08:24:18	6aa4956e-4166-4e77-bea1-89a09bc1396b	Error: Not allowed by CORS
+20240302	08:31:06	832a70cb-f872-4cd2-92bf-a2966a691028	PayloadTooLargeError: request entity too large
+20240302	08:34:04	4bd1c9c0-1e91-4881-b68f-17d9abff3f3e	PayloadTooLargeError: request entity too large
+20240302	08:34:15	a45a7bd0-099b-4129-84ef-69743c22ec45	PayloadTooLargeError: request entity too large
+20240302	08:34:28	7c79aae9-bc37-4a16-b96f-0dc5cc15cf52	PayloadTooLargeError: request entity too large
+20240302	08:35:47	1247c910-d055-4455-90dd-3d61799d8a65	PayloadTooLargeError: request entity too large
+20240302	08:36:19	b109e73c-743d-46ce-a222-23edaaf78fe3	PayloadTooLargeError: request entity too large
+20240302	08:38:29	4ecc76f0-7269-4857-a5b1-91dcf54b5b72	PayloadTooLargeError: request entity too large
