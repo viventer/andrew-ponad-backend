@@ -4,7 +4,7 @@ const verifyJWT = (mustBeLoggedIn) => {
   return (req, res, next) => {
     const authHeader = req.headers.authorization || req.headers.Authorization;
 
-    const token = authHeader.split(" ")[1];
+    const token = authHeader?.split(" ")[1];
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
       if (err && mustBeLoggedIn) {
         return res.sendStatus(403);

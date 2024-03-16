@@ -13,42 +13,24 @@ const handleRefreshToken = async (req, res) => {
     // Verify the refresh token
     const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
 
-    // Find the user by the username in the decoded token
-    const foundUser = await User.findOne({ username: decoded.username }).exec();
-
-    if (!foundUser) {
-      return res.sendStatus(403);
-    }
-
-    // Remove the old refresh token from the user's array
-    foundUser.refreshToken = foundUser.refreshToken.filter(
-      (rt) => rt !== refreshToken
-    );
-
     // Generate a new refresh token
     const newRefreshToken = jwt.sign(
-      { username: foundUser.username },
+      { username: decoded.username },
       process.env.REFRESH_TOKEN_SECRET,
       { expiresIn: "1d" }
     );
 
-    // Add the new refresh token to the user's array
-    foundUser.refreshToken.push(newRefreshToken);
-
-    // Save the updated user document
-    await foundUser.save();
-
-    // Generate a new access token
-    const accessToken = jwt.sign(
-      {
-        UserInfo: {
-          username: foundUser.username,
-          roles: Object.values(foundUser.roles),
-        },
-      },
-      process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: "5m" }
+    // Find and update the user by the username in the decoded token
+    const updatedUser = await User.findOneAndUpdate(
+      { username: decoded.username },
+      { $addToSet: { newRefreshToken } }, // Add new refresh token to the array if not already present
+      { $pull: { refreshToken } },
+      { new: true, upsert: false } // Return the updated document and do not create new document if not found
     );
+
+    if (!updatedUser) {
+      return res.sendStatus(403);
+    }
 
     // Set the new refresh token in the cookie
     res.cookie("jwt", newRefreshToken, {
@@ -57,8 +39,20 @@ const handleRefreshToken = async (req, res) => {
       sameSite: "none",
     });
 
+    // Generate a new access token
+    const accessToken = jwt.sign(
+      {
+        UserInfo: {
+          username: updatedUser.username,
+          roles: Object.values(updatedUser.roles),
+        },
+      },
+      process.env.ACCESS_TOKEN_SECRET,
+      { expiresIn: "5m" }
+    );
+
     // Send the new access token in the response
-    res.json({ accessToken, userId: foundUser.id });
+    res.json({ accessToken, userId: updatedUser.id });
   } catch (err) {
     console.error("Error handling refresh token:", err);
     return res.sendStatus(403);
