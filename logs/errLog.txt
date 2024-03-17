@@ -51,3 +51,10 @@
 20240309	08:45:35	5d97f0fd-77a5-4221-b090-2faeec104dce	TypeError: Cannot read properties of undefined (reading 'split')
 20240312	07:47:25	6edee6f2-a6fc-4594-946e-cb4c9393d65e	ReferenceError: headers is not defined
 20240312	07:47:25	b50050e1-ad4d-4540-b403-e8ce43fd1cf7	ReferenceError: headers is not defined
+20240317	20:41:42	1462ba9e-6528-46b4-97a7-2162bc9c223d	TypeError: Cannot read properties of undefined (reading 'UserInfo')
+20240317	20:41:42	d7c5eae0-19ef-45dc-a399-a55ff14d6889	TypeError: Cannot read properties of undefined (reading 'UserInfo')
+20240317	20:42:49	e8cee658-3e97-47a4-8629-05842ecb3b6e	TypeError: Cannot read properties of undefined (reading 'UserInfo')
+20240317	20:42:49	faa51a7a-b954-480c-ad8a-98e3501048a3	TypeError: Cannot read properties of undefined (reading 'UserInfo')
+20240317	20:45:34	e862c6b4-2fe0-4d04-80f4-02ea1b9a77b6	TypeError: Cannot read properties of undefined (reading 'UserInfo')
+20240317	20:46:06	f9f54469-e0f9-40be-9a09-276022d87750	TypeError: Cannot read properties of undefined (reading 'UserInfo')
+20240317	20:48:16	4183df4d-a8ed-4ee8-8e93-90793975c2ce	TypeError: Cannot read properties of undefined (reading 'UserInfo')

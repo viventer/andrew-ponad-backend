@@ -75,11 +75,9 @@ const getPost = async (req, res) => {
   const isAuthorized = await checkIfAuthorized(post, req);
   if (isAuthorized) {
     return res.json(post);
-  } else {
-    return res
-      .status(403)
-      .json({ message: "Nie masz uprawnień do tego posta" });
   }
+
+  return res.status(403).json({ message: "Nie masz uprawnień do tego posta" });
 };
 
 // @route POST /posts

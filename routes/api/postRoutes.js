@@ -7,7 +7,7 @@ const verifyRoles = require("../../middleware/verifyRoles");
 
 router.route("/:id/addView").patch(postsController.addPostView);
 
-router.use(verifyJWT(true));
+router.use(verifyJWT(false));
 router.route("/").get(postsController.getAllPosts);
 router.route("/:id").get(postsController.getPost);
 

@@ -66,12 +66,10 @@ const getUser = async (req, res) => {
 
   const { password, refreshToken, ...safeUserData } = user.toObject();
 
-  if (req.username !== user.username && !req.roles.includes("Admin")) {
-    res
-      .status(401)
-      .json({ message: "Nie masz dostępu do innych użytkowników" });
+  if (req.username !== user.username && !req?.roles?.includes("Admin")) {
+    return res.json({ username: user.username, id: req.params.id });
   } else {
-    res.json(safeUserData);
+    return res.json(safeUserData);
   }
 };
 

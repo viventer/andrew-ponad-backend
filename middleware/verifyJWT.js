@@ -4,12 +4,13 @@ const verifyJWT = (mustBeLoggedIn) => {
   return (req, res, next) => {
     const authHeader = req.headers.authorization || req.headers.Authorization;
 
+    const isLoggedIn = req?.headers?.islogged === "true";
+
     const token = authHeader?.split(" ")[1];
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
-      if (err && mustBeLoggedIn) {
-        return res.sendStatus(403);
+      if ((err && isLoggedIn) || (err && mustBeLoggedIn)) {
+        return res.status(403).json({ errorMessage: "Błąd uprawnień" });
       } else if (err) {
-        req.isLoggedIn = false;
         return next();
       }
       req.isLoggedIn = true;
