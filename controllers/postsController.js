@@ -5,7 +5,7 @@ const checkIfAllExist = require("../helpers/checkIfAllExist");
 
 // @route GET /posts
 const getAllPosts = async (req, res) => {
-  const posts = await Post.find().lean();
+  const posts = await Post.find({}, { content: 0 }).lean();
 
   let isEmpty = checkIfEmpty(posts);
   if (isEmpty) {
@@ -47,7 +47,7 @@ const getAllPosts = async (req, res) => {
   const postsWithUser = await Promise.all(
     finalPosts.map(async (post) => {
       const user = await User.findById(post.author).lean().exec();
-      return { ...post, username: user.username };
+      return { ...post, username: user?.username };
     })
   );
 
@@ -87,7 +87,6 @@ const createNewPost = async (req, res) => {
   const allExist = checkIfAllExist([
     author,
     title,
-    thumbnail,
     visibility,
     content,
     category,
@@ -155,7 +154,8 @@ const updatePost = async (req, res) => {
     return res.status(400).json({ message: "Nie odnaleziono posta" });
   }
 
-  const creator = await User.findById(author).exec();
+  const creator = await User.findById(post.author).exec();
+  console.log(post);
   if (!creator) {
     return res
       .status(400)
@@ -274,6 +274,9 @@ const checkIfAuthorized = async (post, req) => {
 };
 
 const checkIfCanEdit = (creator, req) => {
+  console.log(req.roles);
+  console.log(creator.username);
+  console.log(req.username);
   if (
     creator.username !== req.username &&
     !req.roles.includes("Admin") &&

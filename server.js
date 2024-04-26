@@ -10,6 +10,10 @@ const cors = require("cors");
 const corsOptions = require("./config/corsOptions");
 
 const { logger, logEvents } = require("./middleware/logEvents");
+const {
+  allRequestsLimiter,
+  loginAttemptsLimiter,
+} = require("./config/rateLimiters");
 const errorHandler = require("./middleware/errorHandler");
 const verifyJWT = require("./middleware/verifyJWT");
 const credentials = require("./middleware/credentials");
@@ -35,6 +39,9 @@ app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb" }));
 
 app.use(cookieParser());
+
+app.use(allRequestsLimiter);
+app.use("/login", loginAttemptsLimiter);
 
 app.use("/register", require("./routes/register"));
 app.use("/login", require("./routes/login"));

@@ -46,6 +46,13 @@ const deleteUser = async (req, res) => {
       .json({ message: "Nie masz dostępu do innych użytkowników" });
   }
 
+  if (user.roles.includes("Admin")) {
+    return res.status(400).json({
+      message:
+        "Usunięcie administratora nie jest możliwe, najpierw zmień mu rolę",
+    });
+  }
+
   const result = await user.deleteOne();
 
   res.json(result);

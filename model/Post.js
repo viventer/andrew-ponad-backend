@@ -14,7 +14,7 @@ const postSchema = new mongoose.Schema(
     },
     thumbnail: {
       type: String,
-      required: true,
+      required: false,
     },
     visibility: {
       type: String,
