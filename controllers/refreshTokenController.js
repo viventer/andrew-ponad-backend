@@ -4,8 +4,7 @@ const jwt = require("jsonwebtoken");
 const handleRefreshToken = async (req, res) => {
   const cookies = req.cookies;
   console.log("cookies:", cookies);
-  if (!cookies?.jwt)
-    return res.status(401).json({ message: "Problem with cookies" });
+  if (!cookies?.jwt) return res.status(401).json({ message: "Unauthorized" });
   const refreshToken = cookies.jwt;
   res.clearCookie("jwt", { httpOnly: true, sameSite: "none" });
 
@@ -17,7 +16,7 @@ const handleRefreshToken = async (req, res) => {
     const newRefreshToken = jwt.sign(
       { username: decoded.username },
       process.env.REFRESH_TOKEN_SECRET,
-      { expiresIn: "1d" }
+      { expiresIn: "7d" }
     );
 
     // Find and update the user by the username in the decoded token
@@ -48,14 +47,14 @@ const handleRefreshToken = async (req, res) => {
         },
       },
       process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: "5m" }
+      { expiresIn: "15m" }
     );
 
     // Send the new access token in the response
     res.json({ accessToken, userId: updatedUser.id });
   } catch (err) {
     console.error("Error handling refresh token:", err);
-    return res.sendStatus(403);
+    return res.sendStatus(401);
   }
 };
 

@@ -155,7 +155,6 @@ const updatePost = async (req, res) => {
   }
 
   const creator = await User.findById(post.author).exec();
-  console.log(post);
   if (!creator) {
     return res
       .status(400)
@@ -261,7 +260,10 @@ const checkIfAuthorized = async (post, req) => {
 
   if (user?.username === req.username) {
     return true;
-  } else if (["private", "draft"].includes(post.visibility)) {
+  } else if (
+    ["private", "draft"].includes(post.visibility) ||
+    req?.roles?.includes("Admin")
+  ) {
     return false;
   } else if (
     post.visibility === "verifiedOnly" &&
@@ -274,9 +276,6 @@ const checkIfAuthorized = async (post, req) => {
 };
 
 const checkIfCanEdit = (creator, req) => {
-  console.log(req.roles);
-  console.log(creator.username);
-  console.log(req.username);
   if (
     creator.username !== req.username &&
     !req.roles.includes("Admin") &&

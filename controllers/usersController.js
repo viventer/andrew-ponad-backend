@@ -89,8 +89,6 @@ const updateUser = async (req, res) => {
 
   const { username, roles, email, firstName, lastName, password } = req.body;
 
-  console.log(req.body);
-
   if (!checkIfAllExist([username, roles])) {
     return res
       .status(400)
