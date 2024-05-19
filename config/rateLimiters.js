@@ -9,7 +9,7 @@ const loginAttemptsLimiter = rateLimit({
 
 const allRequestsLimiter = rateLimit({
   windowMs: 60 * 1000,
-  limit: 30,
+  limit: 50,
   message: "Wysyłasz za dużo zapytań do serwera! Spróbuj ponownie za minutę.",
   statusCode: 429,
 });

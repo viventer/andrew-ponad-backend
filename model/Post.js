@@ -11,6 +11,7 @@ const postSchema = new mongoose.Schema(
     title: {
       type: String,
       required: true,
+      default: "Bez tytułu",
     },
     thumbnail: {
       type: String,

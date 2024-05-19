@@ -84,27 +84,23 @@ const getPost = async (req, res) => {
 const createNewPost = async (req, res) => {
   const { author, title, thumbnail, visibility, content, category } = req.body;
 
-  const allExist = checkIfAllExist([
-    author,
-    title,
-    visibility,
-    content,
-    category,
-  ]);
+  const allExist = checkIfAllExist([author, visibility, content, category]);
 
   if (!allExist) {
     return res.status(400).json({ message: "Uzupełnij wymgane pola" });
   }
 
-  const duplicate = await Post.findOne({ title })
-    .collation({ locale: "pl", strength: 2 })
-    .lean()
-    .exec();
+  if (title) {
+    const duplicate = await Post.findOne({ title })
+      .collation({ locale: "pl", strength: 2 })
+      .lean()
+      .exec();
 
-  if (duplicate) {
-    return res
-      .status(409)
-      .json({ message: "Post o takim tytule już istnieje" });
+    if (duplicate) {
+      return res
+        .status(409)
+        .json({ message: "Post o takim tytule już istnieje" });
+    }
   }
 
   const post = await Post.create({
@@ -117,7 +113,9 @@ const createNewPost = async (req, res) => {
   });
 
   if (post) {
-    return res.status(201).json({ message: "Nowy post został utworzony" });
+    return res
+      .status(201)
+      .json({ message: "Nowy post został utworzony", id: post._id });
   } else {
     return res.status(400).json({ message: "Niepoprawne dane posta" });
   }
