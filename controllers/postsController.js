@@ -88,8 +88,7 @@ const createNewPost = async (req, res) => {
   const allExist = checkIfAllExist([author, visibility, content, category]);
 
   if (!allExist) {
-    console.log("tutaj");
-    return res.status(400).json({ message: "Uzupełnij wymgane pola" });
+    return res.status(400).json({ message: "Uzupełnij wymagane pola" });
   }
 
   const post = await Post.create({

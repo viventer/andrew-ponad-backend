@@ -15,6 +15,11 @@ const errorReportSchema = new mongoose.Schema(
       type: Array,
       required: true,
     },
+    status: {
+      type: String,
+      required: false,
+      default: "new",
+    },
   },
   { timestamps: true }
 );
