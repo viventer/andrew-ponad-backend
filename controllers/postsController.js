@@ -87,20 +87,8 @@ const createNewPost = async (req, res) => {
   const allExist = checkIfAllExist([author, visibility, content, category]);
 
   if (!allExist) {
+    console.log("tutaj");
     return res.status(400).json({ message: "Uzupełnij wymgane pola" });
-  }
-
-  if (title) {
-    const duplicate = await Post.findOne({ title })
-      .collation({ locale: "pl", strength: 2 })
-      .lean()
-      .exec();
-
-    if (duplicate) {
-      return res
-        .status(409)
-        .json({ message: "Post o takim tytule już istnieje" });
-    }
   }
 
   const post = await Post.create({
@@ -134,15 +122,7 @@ const updatePost = async (req, res) => {
 
   const { author, title, thumbnail, visibility, content, category } = req.body;
 
-  const allExist = checkIfAllExist([
-    id,
-    author,
-    title,
-    thumbnail,
-    visibility,
-    content,
-    category,
-  ]);
+  const allExist = checkIfAllExist([id, author, visibility, content, category]);
   if (!allExist) {
     return res.status(400).json({ message: "Wszystkie pola są wymagane" });
   }
@@ -164,17 +144,6 @@ const updatePost = async (req, res) => {
     return res
       .status(403)
       .json({ message: "Możesz edytować tylko swoje posty!" });
-  }
-
-  const duplicate = await Post.findOne({ title })
-    .collation({ locale: "pl", strength: 2 })
-    .lean()
-    .exec();
-
-  if (duplicate && duplicate?._id.toString() !== id) {
-    return res
-      .status(409)
-      .json({ message: "Post o takim tytule już istnieje" });
   }
 
   post.author = author;
