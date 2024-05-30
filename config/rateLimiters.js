@@ -9,12 +9,20 @@ const loginAttemptsLimiter = rateLimit({
 
 const allRequestsLimiter = rateLimit({
   windowMs: 60 * 1000,
-  limit: 500,
+  limit: 50,
   message: "Wysyłasz za dużo zapytań do serwera! Spróbuj ponownie za minutę.",
+  statusCode: 429,
+});
+
+const reportErrorRequestsLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 3,
+  message: "Zgłaszasz błędy zbyt szybko! Spróbuj ponownie za minutę.",
   statusCode: 429,
 });
 
 module.exports = {
   loginAttemptsLimiter,
   allRequestsLimiter,
+  reportErrorRequestsLimiter,
 };

@@ -13,6 +13,7 @@ const { logger, logEvents } = require("./middleware/logEvents");
 const {
   allRequestsLimiter,
   loginAttemptsLimiter,
+  reportErrorRequestsLimiter,
 } = require("./config/rateLimiters");
 const errorHandler = require("./middleware/errorHandler");
 const verifyJWT = require("./middleware/verifyJWT");
@@ -42,12 +43,14 @@ app.use(cookieParser());
 
 app.use(allRequestsLimiter);
 app.use("/login", loginAttemptsLimiter);
+app.use("/errorReports", reportErrorRequestsLimiter);
 
 app.use("/register", require("./routes/register"));
 app.use("/login", require("./routes/login"));
 app.use("/refresh", require("./routes/refresh"));
 app.use("/logout", require("./routes/logout"));
 app.use("/posts", require("./routes/api/postRoutes"));
+app.use("/errorReports", require("./routes/api/errorReportRoutes"));
 
 app.use(verifyJWT(true));
 app.use("/users", require("./routes/api/userRoutes"));

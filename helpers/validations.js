@@ -17,8 +17,10 @@ const validateUsername = (username) => {
   const regex =
     /^(?!.*_{3,})(?=.{3,20}$)[a-zA-Z0-9]+(_[a-zA-Z0-9]*)*[a-zA-Z0-9]+$/;
   const twoLettersRegex = /.*[a-zA-Z].*[a-zA-Z].*/;
+  const isNotAnonymous = username != "anonymous" && username != "anonim";
 
-  const isValid = regex.test(username) && twoLettersRegex.test(username);
+  const isValid =
+    regex.test(username) && twoLettersRegex.test(username) && isNotAnonymous;
   return isValid;
 };
 

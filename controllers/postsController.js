@@ -2,6 +2,7 @@ const Post = require("../model/Post");
 const User = require("../model/User");
 
 const checkIfAllExist = require("../helpers/checkIfAllExist");
+const checkIfEmpty = require("../helpers/checkIfEmpty");
 
 // @route GET /posts
 const getAllPosts = async (req, res) => {
@@ -216,10 +217,6 @@ const addPostView = async (req, res) => {
   const updatedPost = await post.save();
 
   res.json(`Post: '${updatedPost.title}' został zaaktualizowany`);
-};
-
-const checkIfEmpty = (postsList) => {
-  return postsList.length == 0;
 };
 
 const checkIfAuthorized = async (post, req) => {
