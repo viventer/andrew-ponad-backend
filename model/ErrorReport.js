@@ -11,9 +11,13 @@ const errorReportSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    content: {
-      type: Array,
+    description: {
+      type: String,
       required: true,
+    },
+    images: {
+      type: Array,
+      required: false,
     },
     status: {
       type: String,

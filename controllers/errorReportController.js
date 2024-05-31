@@ -52,9 +52,9 @@ const getErrorReport = async (req, res) => {
 
 // @route POST /errorReports
 const createNewErrorReport = async (req, res) => {
-  const { author, title, content } = req.body;
+  const { author, title, description, images } = req.body;
 
-  const allExist = checkIfAllExist([title, content]);
+  const allExist = checkIfAllExist([title, description]);
 
   if (!allExist) {
     return res.status(400).json({ message: "Uzupełnij wymagane pola" });
@@ -63,7 +63,8 @@ const createNewErrorReport = async (req, res) => {
   const errorReport = await ErrorReport.create({
     author,
     title,
-    content,
+    description,
+    images,
   });
 
   if (errorReport) {
