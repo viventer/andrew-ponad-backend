@@ -91,6 +91,10 @@ const createNewPost = async (req, res) => {
     return res.status(400).json({ message: "Uzupełnij wymagane pola" });
   }
 
+  if (title?.length > 40) {
+    return res.status(400).json({ message: "Tytuł posta jest zbyt długi" });
+  }
+
   const post = await Post.create({
     author,
     title,
@@ -125,6 +129,10 @@ const updatePost = async (req, res) => {
   const allExist = checkIfAllExist([id, author, visibility, content, category]);
   if (!allExist) {
     return res.status(400).json({ message: "Wszystkie pola są wymagane" });
+  }
+
+  if (title?.length > 40) {
+    return res.status(400).json({ message: "Tytuł posta jest zbyt długi" });
   }
 
   const post = await Post.findById(id).exec();

@@ -60,6 +60,10 @@ const createNewErrorReport = async (req, res) => {
     return res.status(400).json({ message: "Uzupełnij wymagane pola" });
   }
 
+  if (title?.length > 40) {
+    return res.status(400).json({ message: "Tytuł posta jest zbyt długi" });
+  }
+
   const errorReport = await ErrorReport.create({
     author,
     title,
