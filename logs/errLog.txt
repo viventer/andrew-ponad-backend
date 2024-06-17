@@ -58,3 +58,11 @@
 20240317	20:45:34	e862c6b4-2fe0-4d04-80f4-02ea1b9a77b6	TypeError: Cannot read properties of undefined (reading 'UserInfo')
 20240317	20:46:06	f9f54469-e0f9-40be-9a09-276022d87750	TypeError: Cannot read properties of undefined (reading 'UserInfo')
 20240317	20:48:16	4183df4d-a8ed-4ee8-8e93-90793975c2ce	TypeError: Cannot read properties of undefined (reading 'UserInfo')
+20240609	19:29:33	f7f1d288-ebdc-4f81-840b-f615cca4a662	SyntaxError: Unexpected token '"', ""inProgress"" is not valid JSON
+20240609	19:30:25	35078458-308c-4be4-bf31-029e998df7f1	SyntaxError: Unexpected token '"', ""inProgress"" is not valid JSON
+20240609	19:31:03	1545dfde-cf65-4460-b05b-351ce2e758fe	SyntaxError: Unexpected token '"', ""inProgress"" is not valid JSON
+20240609	19:31:50	0518acca-c1c6-4d0e-91eb-d9cb296d049a	SyntaxError: Unexpected token '"', ""inProgress"" is not valid JSON
+20240609	19:31:56	13b667d7-969e-4638-ad14-7340eb0e6f92	SyntaxError: Unexpected token '"', ""inProgress"" is not valid JSON
+20240609	19:32:15	ba2a538c-6b28-4d37-9fae-349082551156	SyntaxError: Unexpected token '"', ""inProgress"" is not valid JSON
+20240609	19:32:26	3527b7c9-1b01-4e76-ba1b-9349401de8e4	SyntaxError: Unexpected token '"', ""inProgress"" is not valid JSON
+20240609	19:32:34	e855585e-9ef2-4f51-b3ad-baff3ddc047b	SyntaxError: Unexpected token 'i', "inProgress" is not valid JSON

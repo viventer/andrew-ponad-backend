@@ -43,7 +43,7 @@ app.use(cookieParser());
 
 app.use(allRequestsLimiter);
 app.use("/login", loginAttemptsLimiter);
-app.use("/errorReports", reportErrorRequestsLimiter);
+app.post("/errorReports", reportErrorRequestsLimiter);
 
 app.use("/register", require("./routes/register"));
 app.use("/login", require("./routes/login"));
@@ -54,6 +54,7 @@ app.use("/errorReports", require("./routes/api/errorReportRoutes"));
 
 app.use(verifyJWT(true));
 app.use("/users", require("./routes/api/userRoutes"));
+// app.use("/categories", require("./routes/api/categoryRoutes"));
 
 app.all("*", (req, res) => {
   res.status(404);

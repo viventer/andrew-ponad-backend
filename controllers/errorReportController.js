@@ -64,6 +64,24 @@ const createNewErrorReport = async (req, res) => {
     return res.status(400).json({ message: "Tytuł posta jest zbyt długi" });
   }
 
+  const decodedDescription = description
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'");
+  const textOnlyLength = decodedDescription.replace(/<[^>]*>/g, "").length;
+  const isDescriptionLengthCorrect =
+    textOnlyLength <= 1000 &&
+    description.length <= 1400 &&
+    (textOnlyLength >= 24 || description.length >= 50);
+
+  if (!isDescriptionLengthCorrect) {
+    return res
+      .status(400)
+      .json({ message: "Długość opisu błędu jest nieprawidłowa" });
+  }
+
   const errorReport = await ErrorReport.create({
     author,
     title,
