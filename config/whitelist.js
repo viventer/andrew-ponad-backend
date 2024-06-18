@@ -9,6 +9,7 @@ const whitelist = [
   "http://localhost:3000",
   "http://localhost:5173",
   "https://andrew-ponad-frontend.onrender.com",
+  "*",
 ];
 
 module.exports = whitelist;
