@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
+const categoriesController = require("../../controllers/categoriesController");
 const verifyRoles = require("../../middleware/verifyRoles");
 
 router
@@ -15,6 +16,8 @@ router
   .route("/:id")
   .patch(
     verifyRoles("Admin", "Editor", "Creator"),
-    categoriesController.incrementPostsCount
+    categoriesController.changeConnectedPosts
   )
   .delete(verifyRoles("Admin"), categoriesController.deleteCategory);
+
+module.exports = router;

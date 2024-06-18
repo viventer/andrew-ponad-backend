@@ -54,7 +54,7 @@ app.use("/errorReports", require("./routes/api/errorReportRoutes"));
 
 app.use(verifyJWT(true));
 app.use("/users", require("./routes/api/userRoutes"));
-// app.use("/categories", require("./routes/api/categoryRoutes"));
+app.use("/categories", require("./routes/api/categoryRoutes"));
 
 app.all("*", (req, res) => {
   res.status(404);
