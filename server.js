@@ -67,10 +67,10 @@ app.all("*", (req, res) => {
 
 app.use(errorHandler);
 
-app.use(
-  "/",
-  createProxyMiddleware({ target: "http://127.0.0.1:5173", changeOrigin: true })
-);
+// app.use(
+//   "/",
+//   createProxyMiddleware({ target: "http://127.0.0.1:5173", changeOrigin: true })
+// );
 
 mongoose.connection.once("open", () => {
   console.log("Connected to MongoDB");
