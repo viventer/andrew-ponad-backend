@@ -84,20 +84,24 @@ const changeConnectedPosts = async (req, res) => {
   }
 
   const hasCategory = post.category == categoryId;
-  if (!hasCategory) {
+  if (!hasCategory && action == "connect") {
     return res
       .status(204)
       .json({ message: "Post nie posiada podanej kategorii." });
-  }
-
-  if (action == "connect") {
+  } else if (action == "connect") {
     category.connectedPosts = [...category.connectedPosts, postId];
     await category.save();
-  } else if (action == "disconnect") {
+  } else if (!hasCategory && action == "disconnect") {
     category.connectedPosts = category.connectedPosts.filter(
       (post) => post._id != postId
     );
     await category.save();
+  } else if (hasCategory && action == "disconnect") {
+    return res
+      .status(204)
+      .json({
+        message: "Post posiada podaną kategorię. Nie można go odłączyć.",
+      });
   } else {
     return res
       .status(400)

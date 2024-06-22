@@ -1,4 +1,5 @@
 const Post = require("../model/Post");
+const Category = require("../model/Category");
 const User = require("../model/User");
 
 const checkIfAllExist = require("../helpers/checkIfAllExist");
@@ -91,6 +92,13 @@ const createNewPost = async (req, res) => {
     return res.status(400).json({ message: "Uzupełnij wymagane pola" });
   }
 
+  const foundCategory = await Category.findOne({ _id: category });
+  if (!foundCategory) {
+    return res
+      .status(204)
+      .json({ message: "Podana kategoria jest nieprawidłowa" });
+  }
+
   if (title?.length > 40) {
     return res.status(400).json({ message: "Tytuł posta jest zbyt długi" });
   }
@@ -105,6 +113,7 @@ const createNewPost = async (req, res) => {
   });
 
   if (post) {
+    connectPostToCategory(category, post._id);
     return res
       .status(201)
       .json({ message: "Nowy post został utworzony", id: post._id });
@@ -154,6 +163,22 @@ const updatePost = async (req, res) => {
       .json({ message: "Możesz edytować tylko swoje posty!" });
   }
 
+  const oldPostCategory = post.category;
+  const newPostCategory = category;
+  if (newPostCategory != oldPostCategory) {
+    const foundOldCategory = await Category.findOne({ _id: oldPostCategory });
+    const foundNewCategory = await Category.findOne({ _id: newPostCategory });
+
+    try {
+      disconnectPostFromCategory(foundOldCategory, post._id);
+      connectPostToCategory(foundNewCategory, post._id);
+    } catch (error) {
+      return res
+        .status(204)
+        .json({ message: "Podana kategoria jest nieprawidłowa." });
+    }
+  }
+
   post.author = author;
   post.title = title;
   post.thumbnail = thumbnail;
@@ -195,6 +220,12 @@ const deletePost = async (req, res) => {
     return res
       .status(403)
       .json({ message: "Możesz usuwać tylko swoje posty!" });
+  }
+
+  try {
+    disconnectPostFromCategory(post.category, post._id);
+  } catch (error) {
+    return res.status(204).json({ message: "Podana kategoria nie istnieje." });
   }
 
   const result = await post.deleteOne();
@@ -255,6 +286,31 @@ const checkIfCanEdit = (creator, req) => {
     return false;
   } else {
     return true;
+  }
+};
+
+const disconnectPostFromCategory = async (categoryId, postId) => {
+  const category = getCategory(categoryId);
+
+  category.connectedPosts = category.connectedPosts.filter(
+    (post) => post._id != postId
+  );
+  await category.save();
+};
+
+const connectPostToCategory = async (categoryId, postId) => {
+  const category = getCategory(categoryId);
+
+  category.connectedPosts = [...category.connectedPosts, postId];
+  await category.save();
+};
+
+const getCategory = async (categoryId) => {
+  const category = await Category.findOne({ _id: categoryId });
+  if (!category) {
+    throw new Error("Kategoria o podanym id nie istnieje.");
+  } else {
+    return category;
   }
 };
 
