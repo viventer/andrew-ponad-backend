@@ -14,10 +14,7 @@ router
 
 router
   .route("/:id")
-  .patch(
-    verifyRoles("Admin", "Editor", "Creator"),
-    categoriesController.changeConnectedPosts
-  )
+  .patch(verifyRoles("Admin"), categoriesController.changeCategoryName)
   .delete(verifyRoles("Admin"), categoriesController.deleteCategory);
 
 module.exports = router;

@@ -133375,3 +133375,10 @@
 20240622	09:11:36	519e1703-216b-4f41-a066-32edb4d74b8a	OPTIONS	http://localhost:5174	/posts/undefined
 20240622	09:11:36	91008176-7476-4ee3-ab37-a5ee4a7397d8	GET	http://localhost:5174	/posts/undefined
 20240622	09:11:36	0d0e6e82-dde4-47aa-b4da-8ca6155ae76d	OPTIONS	http://localhost:5174	/posts
+20240622	19:26:44	fb66e596-d0ff-40d7-bc80-09d08fcee97f	GET	http://localhost:5174	/refresh
+20240622	19:26:44	7a3f7285-94d9-4a04-aaa4-a50427cc8103	OPTIONS	http://localhost:5174	/posts
+20240622	19:26:44	2191e7fc-579e-488f-9fab-1357791464b5	GET	http://localhost:5174	/posts
+20240622	19:26:44	fba09186-6b14-4873-948e-7b67cfcc690f	OPTIONS	http://localhost:5174	/refresh
+20240622	19:26:44	7bf07c49-3dd5-4739-93b3-c9131c32e9d5	GET	http://localhost:5174	/refresh
+20240622	19:26:44	566584ec-be84-4a1e-ac2a-2e2bdb68b5c2	OPTIONS	http://localhost:5174	/posts
+20240622	19:26:44	9d8069d1-75e7-4a84-b78d-b7df434db321	GET	http://localhost:5174	/posts
