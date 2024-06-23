@@ -43,7 +43,7 @@ const createNewCategory = async (req, res) => {
     return res.status(400).json({ message: "Nazwa kategorii jest zbyt długa" });
   }
 
-  const category = await Category.create({ title });
+  const category = await Category.create({ name });
 
   if (category) {
     return res
@@ -96,6 +96,10 @@ const changeCategoryName = async (req, res) => {
   const { newName } = req.body;
   if (!newName) {
     return res.status(400).json({ message: "Nie podano nowej nazwy" });
+  }
+
+  if (newName?.length > 24) {
+    return res.status(400).json({ message: "Nowa nazwa jest za długa" });
   }
 
   const category = await Category.findOne({ _id: id });
