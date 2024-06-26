@@ -84,15 +84,16 @@ const getPost = async (req, res) => {
 
 // @route POST /posts
 const createNewPost = async (req, res) => {
-  const { author, title, thumbnail, visibility, content, category } = req.body;
+  const { author, title, thumbnail, visibility, content, categoryName } =
+    req.body;
 
-  const allExist = checkIfAllExist([author, visibility, content, category]);
+  const allExist = checkIfAllExist([author, visibility, content, categoryName]);
 
   if (!allExist) {
     return res.status(400).json({ message: "Uzupełnij wymagane pola" });
   }
 
-  const foundCategory = await Category.findOne({ _id: category });
+  const foundCategory = await Category.findOne({ name: categoryName });
   if (!foundCategory) {
     return res
       .status(204)
@@ -109,11 +110,11 @@ const createNewPost = async (req, res) => {
     thumbnail,
     visibility,
     content,
-    category,
+    category: foundCategory._id,
   });
 
   if (post) {
-    connectPostToCategory(category, post._id);
+    connectPostToCategory(foundCategory._id, post._id);
     return res
       .status(201)
       .json({ message: "Nowy post został utworzony", id: post._id });
@@ -133,9 +134,16 @@ const updatePost = async (req, res) => {
     return res.status(400).json({ message: "Podane ID jest nieprawidłowe" });
   }
 
-  const { author, title, thumbnail, visibility, content, category } = req.body;
+  const { author, title, thumbnail, visibility, content, categoryName } =
+    req.body;
 
-  const allExist = checkIfAllExist([id, author, visibility, content, category]);
+  const allExist = checkIfAllExist([
+    id,
+    author,
+    visibility,
+    content,
+    categoryName,
+  ]);
   if (!allExist) {
     return res.status(400).json({ message: "Wszystkie pola są wymagane" });
   }
@@ -163,15 +171,18 @@ const updatePost = async (req, res) => {
       .json({ message: "Możesz edytować tylko swoje posty!" });
   }
 
-  const oldPostCategory = post.category;
-  const newPostCategory = category;
-  if (newPostCategory != oldPostCategory) {
-    const foundOldCategory = await Category.findOne({ _id: oldPostCategory });
-    const foundNewCategory = await Category.findOne({ _id: newPostCategory });
+  const oldPostCategoryId = post.category;
+  const foundNewCategory = await Category.findOne({ name: categoryName });
+  if (!foundNewCategory) {
+    return res
+      .status(400)
+      .json({ message: "Kategoria o podanej nazwie nie istnieje." });
+  }
 
+  if (foundNewCategory._id != oldPostCategoryId) {
     try {
-      disconnectPostFromCategory(foundOldCategory, post._id);
-      connectPostToCategory(foundNewCategory, post._id);
+      disconnectPostFromCategory(oldPostCategoryId, post._id);
+      connectPostToCategory(foundNewCategory._id, post._id);
     } catch (error) {
       return res
         .status(204)
@@ -184,7 +195,7 @@ const updatePost = async (req, res) => {
   post.thumbnail = thumbnail;
   post.visibility = visibility;
   post.content = content;
-  post.category = category;
+  post.category = foundNewCategory._id;
 
   const updatedPost = await post.save();
 
