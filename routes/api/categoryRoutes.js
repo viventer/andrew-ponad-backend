@@ -3,18 +3,29 @@ const router = express.Router();
 
 const categoriesController = require("../../controllers/categoriesController");
 const verifyRoles = require("../../middleware/verifyRoles");
+const verifyJWT = require("../../middleware/verifyJWT");
 
 router
   .route("/")
-  .post(verifyRoles("Admin"), categoriesController.createNewCategory)
-  .get(
-    verifyRoles("Admin", "Editor", "Creator"),
-    categoriesController.getAllCategories
-  );
+  .post(
+    verifyJWT(true),
+    verifyRoles("Admin"),
+    categoriesController.createNewCategory
+  )
+  .get(categoriesController.getAllCategories);
 
 router
   .route("/:id")
-  .patch(verifyRoles("Admin"), categoriesController.changeCategoryName)
-  .delete(verifyRoles("Admin"), categoriesController.deleteCategory);
+  .get(categoriesController.getCategory)
+  .patch(
+    verifyJWT(true),
+    verifyRoles("Admin"),
+    categoriesController.changeCategoryName
+  )
+  .delete(
+    verifyJWT(true),
+    verifyRoles("Admin"),
+    categoriesController.deleteCategory
+  );
 
 module.exports = router;

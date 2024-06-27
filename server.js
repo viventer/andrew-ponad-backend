@@ -51,10 +51,10 @@ app.use("/refresh", require("./routes/refresh"));
 app.use("/logout", require("./routes/logout"));
 app.use("/posts", require("./routes/api/postRoutes"));
 app.use("/errorReports", require("./routes/api/errorReportRoutes"));
+app.use("/categories", require("./routes/api/categoryRoutes"));
 
 app.use(verifyJWT(true));
 app.use("/users", require("./routes/api/userRoutes"));
-app.use("/categories", require("./routes/api/categoryRoutes"));
 
 app.all("*", (req, res) => {
   res.status(404);

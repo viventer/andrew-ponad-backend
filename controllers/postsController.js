@@ -94,10 +94,9 @@ const createNewPost = async (req, res) => {
   }
 
   const foundCategory = await Category.findOne({ name: categoryName });
-  if (!foundCategory) {
-    return res
-      .status(204)
-      .json({ message: "Podana kategoria jest nieprawidłowa" });
+  let category;
+  if (foundCategory) {
+    category = foundCategory._id;
   }
 
   if (title?.length > 40) {
@@ -110,11 +109,13 @@ const createNewPost = async (req, res) => {
     thumbnail,
     visibility,
     content,
-    category: foundCategory._id,
+    category,
   });
 
   if (post) {
-    connectPostToCategory(foundCategory._id, post._id);
+    if (category) {
+      connectPostToCategory(category, post._id);
+    }
     return res
       .status(201)
       .json({ message: "Nowy post został utworzony", id: post._id });

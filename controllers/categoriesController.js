@@ -31,6 +31,22 @@ const getAllCategories = async (req, res) => {
   res.json(categoriesWithPostTitles);
 };
 
+// @router GET /categories:id
+const getCategory = async (req, res) => {
+  if (!req?.params?.id) {
+    return res.status(400).json({ message: "Wymagane ID kategorii" });
+  }
+
+  const category = await Category.findOne({ _id: req.params.id });
+  if (!category) {
+    return res
+      .status(204)
+      .json({ message: "Nie znaleziono kategorii o podanym id." });
+  }
+
+  return res.json(category);
+};
+
 // @route POST /categories
 const createNewCategory = async (req, res) => {
   const { name } = req.body;
@@ -124,4 +140,5 @@ module.exports = {
   createNewCategory,
   changeCategoryName,
   deleteCategory,
+  getCategory,
 };
