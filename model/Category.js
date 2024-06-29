@@ -9,6 +9,7 @@ const categorySchema = new mongoose.Schema({
     {
       type: mongoose.Schema.Types.ObjectId,
       required: false,
+      default: [],
       ref: "Post",
     },
   ],

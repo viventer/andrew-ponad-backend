@@ -46,14 +46,19 @@ const getAllPosts = async (req, res) => {
       .json({ message: "Nie znaleziono postów do których masz dostęp" });
   }
 
-  const postsWithUser = await Promise.all(
+  const postsWithUsernameAndCategoryName = await Promise.all(
     finalPosts.map(async (post) => {
       const user = await User.findById(post.author).lean().exec();
-      return { ...post, username: user?.username };
+      const category = await Category.findById(post.category).lean().exec();
+      let categoryName;
+      if (category) {
+        categoryName = category.name;
+      }
+      return { ...post, username: user?.username, categoryName };
     })
   );
 
-  res.json(postsWithUser);
+  res.json(postsWithUsernameAndCategoryName);
 };
 
 // @route GET /posts/:id
@@ -74,9 +79,19 @@ const getPost = async (req, res) => {
       .json({ message: `Nie znaleziono posta o ID: ${req.params.id}` });
   }
 
+  const category = await Category.findById(post.category).lean().exec();
+  let categoryName;
+
+  if (category) {
+    categoryName = category.name;
+  }
+
+  const cleanPost = post.toObject({ virtuals: true });
+  let postWithCategoryName = { ...cleanPost, categoryName };
+
   const isAuthorized = await checkIfAuthorized(post, req);
   if (isAuthorized) {
-    return res.json(post);
+    return res.json(postWithCategoryName);
   }
 
   return res.status(403).json({ message: "Nie masz uprawnień do tego posta" });
@@ -87,7 +102,7 @@ const createNewPost = async (req, res) => {
   const { author, title, thumbnail, visibility, content, categoryName } =
     req.body;
 
-  const allExist = checkIfAllExist([author, visibility, content, categoryName]);
+  const allExist = checkIfAllExist([author, visibility, content]);
 
   if (!allExist) {
     return res.status(400).json({ message: "Uzupełnij wymagane pola" });
@@ -138,13 +153,7 @@ const updatePost = async (req, res) => {
   const { author, title, thumbnail, visibility, content, categoryName } =
     req.body;
 
-  const allExist = checkIfAllExist([
-    id,
-    author,
-    visibility,
-    content,
-    categoryName,
-  ]);
+  const allExist = checkIfAllExist([id, author, visibility, content]);
   if (!allExist) {
     return res.status(400).json({ message: "Wszystkie pola są wymagane" });
   }
@@ -173,16 +182,21 @@ const updatePost = async (req, res) => {
   }
 
   const oldPostCategoryId = post.category;
+  const foundOldCategory = await Category.findOne({ _id: oldPostCategoryId });
   const foundNewCategory = await Category.findOne({ name: categoryName });
-  if (!foundNewCategory) {
-    return res
-      .status(400)
-      .json({ message: "Kategoria o podanej nazwie nie istnieje." });
-  }
 
-  if (foundNewCategory._id != oldPostCategoryId) {
+  post.author = author;
+  post.title = title;
+  post.thumbnail = thumbnail;
+  post.visibility = visibility;
+  post.content = content;
+
+  if (foundNewCategory && foundNewCategory._id != oldPostCategoryId) {
+    post.category = foundNewCategory._id;
     try {
-      disconnectPostFromCategory(oldPostCategoryId, post._id);
+      if (foundOldCategory) {
+        disconnectPostFromCategory(oldPostCategoryId, post._id);
+      }
       connectPostToCategory(foundNewCategory._id, post._id);
     } catch (error) {
       return res
@@ -191,15 +205,7 @@ const updatePost = async (req, res) => {
     }
   }
 
-  post.author = author;
-  post.title = title;
-  post.thumbnail = thumbnail;
-  post.visibility = visibility;
-  post.content = content;
-  post.category = foundNewCategory._id;
-
   const updatedPost = await post.save();
-
   res.json(`Post: '${updatedPost.title}' został zaaktualizowany`);
 };
 
@@ -302,17 +308,19 @@ const checkIfCanEdit = (creator, req) => {
 };
 
 const disconnectPostFromCategory = async (categoryId, postId) => {
-  const category = getCategory(categoryId);
+  const category = await getCategory(categoryId);
+  if (!category) {
+    return;
+  }
 
   category.connectedPosts = category.connectedPosts.filter(
-    (post) => post._id != postId
+    (connectedPostId) => connectedPostId.toString() != postId
   );
   await category.save();
 };
 
 const connectPostToCategory = async (categoryId, postId) => {
-  const category = getCategory(categoryId);
-
+  const category = await getCategory(categoryId);
   category.connectedPosts = [...category.connectedPosts, postId];
   await category.save();
 };
@@ -320,7 +328,7 @@ const connectPostToCategory = async (categoryId, postId) => {
 const getCategory = async (categoryId) => {
   const category = await Category.findOne({ _id: categoryId });
   if (!category) {
-    throw new Error("Kategoria o podanym id nie istnieje.");
+    return;
   } else {
     return category;
   }
