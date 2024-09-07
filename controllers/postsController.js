@@ -94,7 +94,7 @@ const getPost = async (req, res) => {
     return res.json(postWithCategoryName);
   }
 
-  return res.status(403).json({ message: "Nie masz uprawnień do tego posta" });
+  return res.status(401).json({ message: "Nie masz uprawnień do tego posta" });
 };
 
 // @route POST /posts
@@ -116,6 +116,11 @@ const createNewPost = async (req, res) => {
 
   if (title?.length > 40) {
     return res.status(400).json({ message: "Tytuł posta jest zbyt długi" });
+  }
+
+  const postWithSameTitle = await Post.findOne({ title });
+  if (postWithSameTitle) {
+    return res.status(409).json({ message: "Post o tym tytule już istnieje" });
   }
 
   const post = await Post.create({
@@ -167,6 +172,11 @@ const updatePost = async (req, res) => {
     return res.status(400).json({ message: "Nie odnaleziono posta" });
   }
 
+  const postWithSameTitle = await Post.findOne({ title });
+  if (postWithSameTitle && post.title != title && title != "Bez tytułu") {
+    return res.status(409).json({ message: "Post o tym tytule już istnieje" });
+  }
+
   const creator = await User.findById(post.author).exec();
   if (!creator) {
     return res
@@ -181,7 +191,7 @@ const updatePost = async (req, res) => {
       .json({ message: "Możesz edytować tylko swoje posty!" });
   }
 
-  const oldPostCategoryId = post.category;
+  const oldPostCategoryId = post?.category?.toString();
   const foundOldCategory = await Category.findOne({ _id: oldPostCategoryId });
   const foundNewCategory = await Category.findOne({ name: categoryName });
 
@@ -191,7 +201,10 @@ const updatePost = async (req, res) => {
   post.visibility = visibility;
   post.content = content;
 
-  if (foundNewCategory && foundNewCategory._id != oldPostCategoryId) {
+  if (
+    foundNewCategory &&
+    foundNewCategory._id.toString() != oldPostCategoryId
+  ) {
     post.category = foundNewCategory._id;
     try {
       if (foundOldCategory) {
@@ -278,12 +291,13 @@ const addPostView = async (req, res) => {
 const checkIfAuthorized = async (post, req) => {
   const user = await User.findById(post.author).lean().exec();
 
-  if (user?.username === req.username) {
-    return true;
-  } else if (
-    ["private", "draft"].includes(post.visibility) ||
-    req?.roles?.includes("Admin")
+  if (
+    user?.username === req.username ||
+    req?.roles?.includes("Admin") ||
+    req?.roles?.includes("Editor")
   ) {
+    return true;
+  } else if (["private", "draft"].includes(post.visibility)) {
     return false;
   } else if (
     post.visibility === "verifiedOnly" &&

@@ -30,6 +30,7 @@ const validatePassword = (password) => {
   schema
     .is()
     .min(8) // min. 8 chars
+    .max(32)
     .has()
     .uppercase() // min. 1 uppercase letter
     .has()

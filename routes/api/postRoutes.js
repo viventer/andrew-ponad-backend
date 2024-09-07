@@ -4,8 +4,11 @@ const router = express.Router();
 const postsController = require("../../controllers/postsController");
 const verifyJWT = require("../../middleware/verifyJWT");
 const verifyRoles = require("../../middleware/verifyRoles");
+const { addPostViewLimiter } = require("../../config/rateLimiters");
 
-router.route("/:id/addView").patch(postsController.addPostView);
+router
+  .route("/:id/addView")
+  .patch(addPostViewLimiter, postsController.addPostView);
 
 router.use(verifyJWT(false));
 router.route("/").get(postsController.getAllPosts);

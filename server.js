@@ -53,7 +53,6 @@ app.use("/posts", require("./routes/api/postRoutes"));
 app.use("/errorReports", require("./routes/api/errorReportRoutes"));
 app.use("/categories", require("./routes/api/categoryRoutes"));
 
-app.use(verifyJWT(true));
 app.use("/users", require("./routes/api/userRoutes"));
 
 app.all("*", (req, res) => {

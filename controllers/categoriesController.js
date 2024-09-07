@@ -61,6 +61,13 @@ const createNewCategory = async (req, res) => {
       .json({ message: "Nazwa powinna zawierać od 3 do 24 znaków." });
   }
 
+  const categoryWithSameName = await Category.findOne({ name });
+  if (categoryWithSameName) {
+    return res
+      .status(409)
+      .json({ message: "Kategoria o tej nazwie już istnieje." });
+  }
+
   const category = await Category.create({ name });
 
   if (category) {
@@ -127,6 +134,13 @@ const changeCategoryName = async (req, res) => {
     return res
       .status(204)
       .json({ message: `Nie znaleziono kategorii o ID: ${req.params.id}` });
+  }
+
+  const categoryWithSameName = await Category.findOne({ name: newName });
+  if (categoryWithSameName) {
+    return res
+      .status(409)
+      .json({ message: "Kategoria o tej nazwie już istnieje." });
   }
 
   category.name = newName;

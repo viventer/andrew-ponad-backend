@@ -3,7 +3,6 @@ const bcrypt = require("bcrypt");
 const checkIfAllExist = require("../helpers/checkIfAllExist");
 const {
   validateUsername,
-  validateOffensiveness,
   validateEmail,
   validateName,
   validatePassword,
@@ -60,7 +59,7 @@ const deleteUser = async (req, res) => {
 
 // @route GET /users/:id
 const getUser = async (req, res) => {
-  if (!req?.params?.id) {
+  if (!req?.params?.id || req?.params?.id == null) {
     return res.status(400).json({ message: "Wymagane ID użytkownika" });
   }
 
@@ -78,6 +77,22 @@ const getUser = async (req, res) => {
   } else {
     return res.json(safeUserData);
   }
+};
+
+// @route /user/:id/username
+const getUsername = async (req, res) => {
+  if (!req?.params?.id) {
+    return res.status(400).json({ message: "Wymagane ID użytkownika" });
+  }
+
+  const user = await User.findOne({ _id: req.params.id });
+  if (!user) {
+    return res
+      .status(204)
+      .json({ message: `Nie ma użytkownika o podanym id: ${req.body.id}` });
+  }
+
+  res.json({ username: user.username, id: req.params.id });
 };
 
 // @route PATCH /users/:id
@@ -184,4 +199,5 @@ module.exports = {
   deleteUser,
   getUser,
   updateUser,
+  getUsername,
 };

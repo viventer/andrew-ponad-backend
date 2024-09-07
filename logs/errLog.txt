@@ -68,5 +68,3 @@
 20240609	19:32:34	e855585e-9ef2-4f51-b3ad-baff3ddc047b	SyntaxError: Unexpected token 'i', "inProgress" is not valid JSON
 20240618	07:43:18	138f7b58-61d5-496c-8fec-ba4b6f4dbbb0	Error: Not allowed by CORS
 20240618	07:46:02	c4db1c22-3e07-42d1-a562-8b60443582f8	Error: Not allowed by CORS
-20240904	13:20:12	be06b96a-bbfa-42f6-8fbe-c060762cb77a	Error: Not allowed by CORS
-20240904	13:20:15	1d4ae4fb-5948-4722-8e15-69f29478f2df	Error: Not allowed by CORS

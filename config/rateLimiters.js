@@ -21,8 +21,15 @@ const reportErrorRequestsLimiter = rateLimit({
   statusCode: 429,
 });
 
+const addPostViewLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 3,
+  statusCode: 204,
+});
+
 module.exports = {
   loginAttemptsLimiter,
   allRequestsLimiter,
   reportErrorRequestsLimiter,
+  addPostViewLimiter,
 };
