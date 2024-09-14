@@ -2,6 +2,8 @@ require("dotenv").config();
 
 const express = require("express");
 const app = express();
+const fs = require("fs");
+const https = require("https");
 
 const path = require("path");
 const cookieParser = require("cookie-parser");
@@ -25,6 +27,11 @@ const mongoose = require("mongoose");
 const connectDB = require("./config/dbConn");
 
 const PORT = process.env.PORT || 3500;
+
+const httpsOptions = {
+  key: fs.readFileSync(path.join(__dirname, "certs/server.key")),
+  cert: fs.readFileSync(path.join(__dirname, "certs/server.crt")),
+};
 
 connectDB();
 
@@ -66,14 +73,13 @@ app.all("*", (req, res) => {
 
 app.use(errorHandler);
 
-// app.use(
-//   "/",
-//   createProxyMiddleware({ target: "http://127.0.0.1:5173", changeOrigin: true })
-// );
-
 mongoose.connection.once("open", () => {
   console.log("Connected to MongoDB");
-  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+  https
+    .createServer(httpsOptions, app)
+    .listen(PORT, () =>
+      console.log(`Server running on https://localhost:${PORT}`)
+    );
 });
 
 mongoose.connection.on("error", (err) => {
